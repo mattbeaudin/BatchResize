@@ -37,13 +37,14 @@ namespace BatchResize
             this.rbOverwrite = new System.Windows.Forms.RadioButton();
             this.rbCopy = new System.Windows.Forms.RadioButton();
             this.gbSaveOptions = new System.Windows.Forms.GroupBox();
+            this.chkAspectRatio = new System.Windows.Forms.CheckBox();
             this.nudHeight = new System.Windows.Forms.NumericUpDown();
             this.lblNewHeight = new System.Windows.Forms.Label();
             this.nudWidth = new System.Windows.Forms.NumericUpDown();
             this.lblNewWidth = new System.Windows.Forms.Label();
             this.btnResize = new System.Windows.Forms.Button();
             this.pbResize = new System.Windows.Forms.ProgressBar();
-            this.chkAspectRatio = new System.Windows.Forms.CheckBox();
+            this.cmbFileExtension = new System.Windows.Forms.ComboBox();
             this.gbSaveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWidth)).BeginInit();
@@ -54,7 +55,7 @@ namespace BatchResize
             this.txtPhotoDirectory.Location = new System.Drawing.Point(12, 29);
             this.txtPhotoDirectory.Name = "txtPhotoDirectory";
             this.txtPhotoDirectory.ReadOnly = true;
-            this.txtPhotoDirectory.Size = new System.Drawing.Size(391, 22);
+            this.txtPhotoDirectory.Size = new System.Drawing.Size(321, 22);
             this.txtPhotoDirectory.TabIndex = 0;
             // 
             // lblPhotoDirectory
@@ -68,9 +69,9 @@ namespace BatchResize
             // 
             // btnSelectDirectory
             // 
-            this.btnSelectDirectory.Location = new System.Drawing.Point(409, 19);
+            this.btnSelectDirectory.Location = new System.Drawing.Point(424, 27);
             this.btnSelectDirectory.Name = "btnSelectDirectory";
-            this.btnSelectDirectory.Size = new System.Drawing.Size(107, 42);
+            this.btnSelectDirectory.Size = new System.Drawing.Size(146, 26);
             this.btnSelectDirectory.TabIndex = 2;
             this.btnSelectDirectory.Text = "Select Photo Folder";
             this.btnSelectDirectory.UseVisualStyleBackColor = true;
@@ -80,7 +81,7 @@ namespace BatchResize
             // 
             this.rbOverwrite.AutoSize = true;
             this.rbOverwrite.Checked = true;
-            this.rbOverwrite.Location = new System.Drawing.Point(327, 22);
+            this.rbOverwrite.Location = new System.Drawing.Point(362, 22);
             this.rbOverwrite.Name = "rbOverwrite";
             this.rbOverwrite.Size = new System.Drawing.Size(141, 21);
             this.rbOverwrite.TabIndex = 4;
@@ -91,7 +92,7 @@ namespace BatchResize
             // rbCopy
             // 
             this.rbCopy.AutoSize = true;
-            this.rbCopy.Location = new System.Drawing.Point(327, 43);
+            this.rbCopy.Location = new System.Drawing.Point(362, 43);
             this.rbCopy.Name = "rbCopy";
             this.rbCopy.Size = new System.Drawing.Size(165, 21);
             this.rbCopy.TabIndex = 5;
@@ -109,10 +110,20 @@ namespace BatchResize
             this.gbSaveOptions.Controls.Add(this.rbCopy);
             this.gbSaveOptions.Location = new System.Drawing.Point(12, 67);
             this.gbSaveOptions.Name = "gbSaveOptions";
-            this.gbSaveOptions.Size = new System.Drawing.Size(504, 81);
+            this.gbSaveOptions.Size = new System.Drawing.Size(552, 81);
             this.gbSaveOptions.TabIndex = 6;
             this.gbSaveOptions.TabStop = false;
             this.gbSaveOptions.Text = "Save Options";
+            // 
+            // chkAspectRatio
+            // 
+            this.chkAspectRatio.AutoSize = true;
+            this.chkAspectRatio.Location = new System.Drawing.Point(173, 44);
+            this.chkAspectRatio.Name = "chkAspectRatio";
+            this.chkAspectRatio.Size = new System.Drawing.Size(167, 21);
+            this.chkAspectRatio.TabIndex = 10;
+            this.chkAspectRatio.Text = "Maintain Aspect Ratio";
+            this.chkAspectRatio.UseVisualStyleBackColor = true;
             // 
             // nudHeight
             // 
@@ -136,7 +147,6 @@ namespace BatchResize
             0,
             0});
             this.nudHeight.ValueChanged += new System.EventHandler(this.nudHeight_ValueChanged);
-            this.nudHeight.Controls[0].Visible = false;
             // 
             // lblNewHeight
             // 
@@ -169,7 +179,6 @@ namespace BatchResize
             0,
             0});
             this.nudWidth.ValueChanged += new System.EventHandler(this.nudWidth_ValueChanged);
-            this.nudWidth.Controls[0].Visible = false;
             // 
             // lblNewWidth
             // 
@@ -195,25 +204,39 @@ namespace BatchResize
             // 
             this.pbResize.Location = new System.Drawing.Point(139, 154);
             this.pbResize.Name = "pbResize";
-            this.pbResize.Size = new System.Drawing.Size(377, 33);
+            this.pbResize.Size = new System.Drawing.Size(425, 33);
+            this.pbResize.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.pbResize.TabIndex = 8;
-            this.pbResize.Style = ProgressBarStyle.Continuous;
             // 
-            // chkAspectRatio
+            // cmbFileExtension
             // 
-            this.chkAspectRatio.AutoSize = true;
-            this.chkAspectRatio.Location = new System.Drawing.Point(173, 44);
-            this.chkAspectRatio.Name = "chkAspectRatio";
-            this.chkAspectRatio.Size = new System.Drawing.Size(147, 21);
-            this.chkAspectRatio.TabIndex = 10;
-            this.chkAspectRatio.Text = "Keep Aspect Ratio";
-            this.chkAspectRatio.UseVisualStyleBackColor = true;
+            this.cmbFileExtension.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFileExtension.FormattingEnabled = true;
+            this.cmbFileExtension.Items.AddRange(new object[] {
+            ".bmp",
+            ".cr2",
+            ".eps",
+            ".gif",
+            ".jpg",
+            ".jpeg",
+            ".nef",
+            ".orf",
+            ".png",
+            ".raw",
+            ".sr2",
+            ".tif",
+            ".tiff"});
+            this.cmbFileExtension.Location = new System.Drawing.Point(339, 28);
+            this.cmbFileExtension.Name = "cmbFileExtension";
+            this.cmbFileExtension.Size = new System.Drawing.Size(79, 24);
+            this.cmbFileExtension.TabIndex = 9;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(528, 194);
+            this.ClientSize = new System.Drawing.Size(576, 194);
+            this.Controls.Add(this.cmbFileExtension);
             this.Controls.Add(this.pbResize);
             this.Controls.Add(this.btnResize);
             this.Controls.Add(this.gbSaveOptions);
@@ -250,6 +273,7 @@ namespace BatchResize
         private System.Windows.Forms.NumericUpDown nudWidth;
         private System.Windows.Forms.Label lblNewWidth;
         private System.Windows.Forms.CheckBox chkAspectRatio;
+        private ComboBox cmbFileExtension;
     }
 }
 

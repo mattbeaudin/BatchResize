@@ -27,6 +27,7 @@ namespace BatchResize
         {
             nudWidth.Value = _resizeWidth;
             nudHeight.Value = _resizeHeight;
+            cmbFileExtension.SelectedIndex = 4;
         }
 
         private void OpenFolderBrowserDialog()
@@ -38,7 +39,16 @@ namespace BatchResize
                     _originalDirectory = dialog.SelectedPath;
 
                     txtPhotoDirectory.Text = _originalDirectory;
-                    _originalFiles = Directory.GetFiles(dialog.SelectedPath, "*.jpg");
+                    Console.WriteLine(cmbFileExtension.SelectedItem);
+                    _originalFiles = Directory.GetFiles(dialog.SelectedPath, "*" + cmbFileExtension.SelectedItem);
+
+                    if ( _originalFiles.Length == 0 )
+                    {
+                        MessageBox.Show($"No files with extension '{cmbFileExtension.SelectedItem}' in directory.",
+                            "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                        return;
+                    }
 
                     btnResize.Enabled = true;
 
