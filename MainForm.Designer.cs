@@ -93,6 +93,7 @@ namespace BatchResize
             // rbCopy
             // 
             this.rbCopy.AutoSize = true;
+            this.rbCopy.Enabled = false;
             this.rbCopy.Location = new System.Drawing.Point(362, 43);
             this.rbCopy.Name = "rbCopy";
             this.rbCopy.Size = new System.Drawing.Size(165, 21);

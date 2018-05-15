@@ -150,7 +150,7 @@ namespace BatchResize
             if (result)
                 MessageBox.Show("New resized photos have been saved to " + finalPath, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
-                MessageBox.Show("I don't really know what happened...", "Something went horribly wrong.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Files were not changed as process was aborted.", "Something went wrong.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void nudWidth_ValueChanged(object sender, EventArgs e)
