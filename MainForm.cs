@@ -85,13 +85,15 @@ namespace BatchResize
             {
                 DialogResult result = MessageBox.Show(ex.Message, "File in use Exception", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
 
-                if ( result == DialogResult.Retry )
-                    return ProcessImages();
-
-                if ( result == DialogResult.Ignore )
-                    return ProcessImages(startPos);
-
-                return false;
+                switch (result)
+                {
+                    case DialogResult.Retry:
+                        return ProcessImages();
+                    case DialogResult.Ignore:
+                        return ProcessImages(startPos);
+                    default:
+                        return false;
+                }
             }
 
             return true;
