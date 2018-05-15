@@ -52,6 +52,7 @@ namespace BatchResize
             // 
             // txtPhotoDirectory
             // 
+            this.txtPhotoDirectory.BackColor = System.Drawing.SystemColors.Window;
             this.txtPhotoDirectory.Location = new System.Drawing.Point(12, 29);
             this.txtPhotoDirectory.Name = "txtPhotoDirectory";
             this.txtPhotoDirectory.ReadOnly = true;
