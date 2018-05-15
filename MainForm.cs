@@ -45,7 +45,7 @@ namespace BatchResize
                     if ( _originalFiles.Length == 0 )
                     {
                         MessageBox.Show($"No files with extension '{cmbFileExtension.SelectedItem}' in directory.",
-                            "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         return;
                     }
@@ -170,7 +170,7 @@ namespace BatchResize
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                MessageBox.Show("Value must be greater than 0.", "Value error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Value must be greater than 0.", "Value error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -190,7 +190,7 @@ namespace BatchResize
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                MessageBox.Show("Value must be greater than 0.", "Value error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Value must be greater than 0.", "Value error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

@@ -71,7 +71,7 @@ namespace BatchResize
             // 
             this.btnSelectDirectory.Location = new System.Drawing.Point(424, 27);
             this.btnSelectDirectory.Name = "btnSelectDirectory";
-            this.btnSelectDirectory.Size = new System.Drawing.Size(146, 26);
+            this.btnSelectDirectory.Size = new System.Drawing.Size(140, 26);
             this.btnSelectDirectory.TabIndex = 2;
             this.btnSelectDirectory.Text = "Select Photo Folder";
             this.btnSelectDirectory.UseVisualStyleBackColor = true;
