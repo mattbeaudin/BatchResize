@@ -1,4 +1,6 @@
-﻿namespace BatchResize
+﻿using System.Windows.Forms;
+
+namespace BatchResize
 {
     partial class MainForm
     {
@@ -41,6 +43,7 @@
             this.lblNewWidth = new System.Windows.Forms.Label();
             this.btnResize = new System.Windows.Forms.Button();
             this.pbResize = new System.Windows.Forms.ProgressBar();
+            this.chkAspectRatio = new System.Windows.Forms.CheckBox();
             this.gbSaveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWidth)).BeginInit();
@@ -51,7 +54,7 @@
             this.txtPhotoDirectory.Location = new System.Drawing.Point(12, 29);
             this.txtPhotoDirectory.Name = "txtPhotoDirectory";
             this.txtPhotoDirectory.ReadOnly = true;
-            this.txtPhotoDirectory.Size = new System.Drawing.Size(350, 22);
+            this.txtPhotoDirectory.Size = new System.Drawing.Size(391, 22);
             this.txtPhotoDirectory.TabIndex = 0;
             // 
             // lblPhotoDirectory
@@ -65,7 +68,7 @@
             // 
             // btnSelectDirectory
             // 
-            this.btnSelectDirectory.Location = new System.Drawing.Point(368, 19);
+            this.btnSelectDirectory.Location = new System.Drawing.Point(409, 19);
             this.btnSelectDirectory.Name = "btnSelectDirectory";
             this.btnSelectDirectory.Size = new System.Drawing.Size(107, 42);
             this.btnSelectDirectory.TabIndex = 2;
@@ -77,7 +80,7 @@
             // 
             this.rbOverwrite.AutoSize = true;
             this.rbOverwrite.Checked = true;
-            this.rbOverwrite.Location = new System.Drawing.Point(190, 23);
+            this.rbOverwrite.Location = new System.Drawing.Point(327, 22);
             this.rbOverwrite.Name = "rbOverwrite";
             this.rbOverwrite.Size = new System.Drawing.Size(141, 21);
             this.rbOverwrite.TabIndex = 4;
@@ -88,7 +91,7 @@
             // rbCopy
             // 
             this.rbCopy.AutoSize = true;
-            this.rbCopy.Location = new System.Drawing.Point(190, 50);
+            this.rbCopy.Location = new System.Drawing.Point(327, 43);
             this.rbCopy.Name = "rbCopy";
             this.rbCopy.Size = new System.Drawing.Size(165, 21);
             this.rbCopy.TabIndex = 5;
@@ -97,6 +100,7 @@
             // 
             // gbSaveOptions
             // 
+            this.gbSaveOptions.Controls.Add(this.chkAspectRatio);
             this.gbSaveOptions.Controls.Add(this.nudHeight);
             this.gbSaveOptions.Controls.Add(this.lblNewHeight);
             this.gbSaveOptions.Controls.Add(this.nudWidth);
@@ -105,7 +109,7 @@
             this.gbSaveOptions.Controls.Add(this.rbCopy);
             this.gbSaveOptions.Location = new System.Drawing.Point(12, 67);
             this.gbSaveOptions.Name = "gbSaveOptions";
-            this.gbSaveOptions.Size = new System.Drawing.Size(463, 81);
+            this.gbSaveOptions.Size = new System.Drawing.Size(504, 81);
             this.gbSaveOptions.TabIndex = 6;
             this.gbSaveOptions.TabStop = false;
             this.gbSaveOptions.Text = "Save Options";
@@ -114,7 +118,7 @@
             // 
             this.nudHeight.Location = new System.Drawing.Point(95, 43);
             this.nudHeight.Maximum = new decimal(new int[] {
-            1980,
+            1080,
             0,
             0,
             0});
@@ -132,6 +136,7 @@
             0,
             0});
             this.nudHeight.ValueChanged += new System.EventHandler(this.nudHeight_ValueChanged);
+            this.nudHeight.Controls[0].Visible = false;
             // 
             // lblNewHeight
             // 
@@ -164,6 +169,7 @@
             0,
             0});
             this.nudWidth.ValueChanged += new System.EventHandler(this.nudWidth_ValueChanged);
+            this.nudWidth.Controls[0].Visible = false;
             // 
             // lblNewWidth
             // 
@@ -189,14 +195,25 @@
             // 
             this.pbResize.Location = new System.Drawing.Point(139, 154);
             this.pbResize.Name = "pbResize";
-            this.pbResize.Size = new System.Drawing.Size(336, 33);
+            this.pbResize.Size = new System.Drawing.Size(377, 33);
             this.pbResize.TabIndex = 8;
+            this.pbResize.Style = ProgressBarStyle.Continuous;
+            // 
+            // chkAspectRatio
+            // 
+            this.chkAspectRatio.AutoSize = true;
+            this.chkAspectRatio.Location = new System.Drawing.Point(173, 44);
+            this.chkAspectRatio.Name = "chkAspectRatio";
+            this.chkAspectRatio.Size = new System.Drawing.Size(147, 21);
+            this.chkAspectRatio.TabIndex = 10;
+            this.chkAspectRatio.Text = "Keep Aspect Ratio";
+            this.chkAspectRatio.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(486, 194);
+            this.ClientSize = new System.Drawing.Size(528, 194);
             this.Controls.Add(this.pbResize);
             this.Controls.Add(this.btnResize);
             this.Controls.Add(this.gbSaveOptions);
@@ -232,6 +249,7 @@
         private System.Windows.Forms.Label lblNewHeight;
         private System.Windows.Forms.NumericUpDown nudWidth;
         private System.Windows.Forms.Label lblNewWidth;
+        private System.Windows.Forms.CheckBox chkAspectRatio;
     }
 }
 
