@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using BatchResize.Classes;
 
 namespace BatchResize
 {
@@ -17,13 +17,18 @@ namespace BatchResize
         public MainForm()
         {
             InitializeComponent();
+
+            // Load ImageExtensions into cmbFileExtensions and select the most common extension.
+            foreach (var format in ImageExtensions.AvailableFormats)
+                cmbFileExtension.Items.Add(format);
+
+            cmbFileExtension.SelectedIndex = 2;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             nudWidth.Value = _resizeWidth;
             nudHeight.Value = _resizeHeight;
-            cmbFileExtension.SelectedIndex = 4;
         }
 
         /// <summary>
@@ -98,6 +103,9 @@ namespace BatchResize
         /// <returns>Whether or not the processing succeeded.</returns>
         private bool ProcessImages(int startPos = 0)
         {
+            // Get ImageFormat to save new images as.
+            var imageFormat = ImageExtensions.GetImageFormat((string) cmbFileExtension.SelectedItem);
+
             // Disable controls so user can't harm the process.
             ToggleControls(false);
 
@@ -121,9 +129,7 @@ namespace BatchResize
                         if ( File.Exists(_originalFiles[i]) )
                             File.Delete(_originalFiles[i]);
 
-                        // TODO -> Be able to save as original file extension.
-                        // TODO -> Create extended ImageFormat class with method to determine file extension from string.
-                        newImage.Save(_originalFiles[i], ImageFormat.Jpeg);
+                        newImage.Save(_originalFiles[i], imageFormat);
 
                         newImage.Dispose();
                     }

@@ -180,20 +180,6 @@ namespace BatchResize
             // 
             this.cmbFileExtension.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbFileExtension.FormattingEnabled = true;
-            this.cmbFileExtension.Items.AddRange(new object[] {
-            ".bmp",
-            ".cr2",
-            ".eps",
-            ".gif",
-            ".jpg",
-            ".jpeg",
-            ".nef",
-            ".orf",
-            ".png",
-            ".raw",
-            ".sr2",
-            ".tif",
-            ".tiff"});
             this.cmbFileExtension.Location = new System.Drawing.Point(339, 28);
             this.cmbFileExtension.Name = "cmbFileExtension";
             this.cmbFileExtension.Size = new System.Drawing.Size(79, 24);
