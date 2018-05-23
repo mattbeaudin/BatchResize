@@ -26,6 +26,10 @@ namespace BatchResize
             cmbFileExtension.SelectedIndex = 4;
         }
 
+        /// <summary>
+        /// Setup initial values for NumericUpDowns.
+        /// Done by finding the first landscape photo and selecting it's size.
+        /// </summary>
         private void InitializeResizeSettings()
         {
             var imageData = Image.FromFile(_originalFiles[0]);
@@ -35,10 +39,12 @@ namespace BatchResize
                 if ( imageData.Width > imageData.Height )
                     break;
 
+                // Make sure to dispose so file is let go.
                 imageData.Dispose();
                 imageData = Image.FromFile(_originalFiles[i]);
             }
 
+            // Set private vars as well as controls.
             _resizeWidth = imageData.Width;
             _resizeHeight = imageData.Height;
 
@@ -47,6 +53,9 @@ namespace BatchResize
             imageData.Dispose();
         }
 
+        /// <summary>
+        /// Setup progress bar with maximum amount of files.
+        /// </summary>
         private void InitializeProgressBar()
         {
             pbResize.Value = 0;
@@ -54,6 +63,9 @@ namespace BatchResize
             pbResize.Step = 1;
         }
 
+        /// <summary>
+        /// Open Folder Browser Dialog so users can select a folder and what type of photo they'd like to resize.
+        /// </summary>
         private void OpenFolderBrowserDialog()
         {
             using (var dialog = new FolderBrowserDialog())
@@ -79,10 +91,17 @@ namespace BatchResize
             }
         }
 
+        /// <summary>
+        /// Goes through each file in directory and updates them with a resized version of the original.
+        /// </summary>
+        /// <param name="startPos">What folder in the directory to start resizing from. Useful for Retry and skipping a file that can't be loaded.</param>
+        /// <returns>Whether or not the processing succeeded.</returns>
         private bool ProcessImages(int startPos = 0)
         {
+            // Disable controls so user can't harm the process.
             ToggleControls(false);
 
+            // Reset progress bar if starting from beginning.
             if ( startPos == 0 )
                 InitializeProgressBar();
 
@@ -98,10 +117,12 @@ namespace BatchResize
                         var newImage = ResizeImage(original);
                         original.Dispose();
 
-                        // Delete before saving new
+                        // Delete before saving new (update)
                         if ( File.Exists(_originalFiles[i]) )
                             File.Delete(_originalFiles[i]);
 
+                        // TODO -> Be able to save as original file extension.
+                        // TODO -> Create extended ImageFormat class with method to determine file extension from string.
                         newImage.Save(_originalFiles[i], ImageFormat.Jpeg);
 
                         newImage.Dispose();
@@ -114,9 +135,13 @@ namespace BatchResize
             }
             catch (IOException ex)
             {
+                // Capture exception if current file is in use by another process.
                 DialogResult result = MessageBox.Show(ex.Message, "File in use Exception",
                     MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
 
+                // If user wants to retry, run ProcessImages from beginning.
+                // If user wants to ignore, run ProcessImages from next file to skip current one.
+                // TODO -> Find a better way to recursively call ProcessImages().
                 switch (result)
                 {
                     case DialogResult.Retry:
@@ -128,10 +153,15 @@ namespace BatchResize
                 }
             }
 
+            // Turn controls back on.
             ToggleControls(true);
             return true;
         }
 
+        /// <summary>
+        /// Toggles controls so user can't press anything while images are being processed.
+        /// </summary>
+        /// <param name="state">Whether or not controls will be enabled.</param>
         private void ToggleControls(bool state)
         {
             btnSelectDirectory.Enabled = state;
@@ -141,11 +171,21 @@ namespace BatchResize
             nudHeight.Enabled = state;
         }
 
+        /// <summary>
+        /// Determines whether image is landscape or portrait and resizes them accordingly.
+        /// </summary>
+        /// <param name="image">Original image to resize.</param>
+        /// <returns>Properly resized image.</returns>
         private Image ResizeImage(Image image)
         {
             return image.Width > image.Height ? ResizeLandscape(image) : ResizePortrait(image);
         }
 
+        /// <summary>
+        /// Resizes image with dimensions of a landscape photo.
+        /// </summary>
+        /// <param name="image">Original image to resize.</param>
+        /// <returns>Properly resized image.</returns>
         private Image ResizeLandscape(Image image)
         {
             var newImage = new Bitmap((int) _resizeWidth, (int) _resizeHeight);
@@ -158,6 +198,11 @@ namespace BatchResize
             return newImage;
         }
 
+        /// <summary>
+        /// Resizes image with dimensions of a portrait photo.
+        /// </summary>
+        /// <param name="image">Original image to resize.</param>
+        /// <returns>Properly resized image.</returns>
         private Image ResizePortrait(Image image)
         {
             var newImage = new Bitmap((int)_resizeHeight, (int)_resizeWidth);
@@ -170,13 +215,9 @@ namespace BatchResize
             return newImage;
         }
 
-        private void btnSelectDirectory_Click(object sender, EventArgs e)
-        {
-            OpenFolderBrowserDialog();
-        }
-
         private void btnResize_Click(object sender, EventArgs e)
         {
+            // Run ProcessImages and grab result.
             bool result = ProcessImages();
 
             if ( result )
@@ -186,16 +227,24 @@ namespace BatchResize
                 MessageBox.Show("Files were not changed as process was aborted.", "Something went wrong.",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
+            // Reset progress bar when done.
             pbResize.Value = 0;
+        }
+
+        private void btnSelectDirectory_Click(object sender, EventArgs e)
+        {
+            OpenFolderBrowserDialog();
         }
 
         private void nudWidth_ValueChanged(object sender, EventArgs e)
         {
+            // Update private width variable.
             _resizeWidth = (int) nudWidth.Value;
         }
 
         private void nudHeight_ValueChanged(object sender, EventArgs e)
         {
+            // Update private height variable.
             _resizeHeight = (int) nudHeight.Value;
         }
     }
