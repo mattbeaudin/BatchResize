@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("BatchResize")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Morley Companies Inc")]
+[assembly: AssemblyCompany("ConfiDevs")]
 [assembly: AssemblyProduct("BatchResize")]
-[assembly: AssemblyCopyright("Copyright © Morley Companies Inc 2018")]
+[assembly: AssemblyCopyright("Copyright © Matthew Beaudin 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
