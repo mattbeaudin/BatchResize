@@ -14,10 +14,6 @@ namespace BatchResize
         private decimal _resizeWidth = 1920;
         private decimal _resizeHeight = 1080;
 
-        private const string _copyDirectory = "resized";
-
-        private bool _changeSize = false;
-
         public MainForm()
         {
             InitializeComponent();
@@ -30,16 +26,43 @@ namespace BatchResize
             cmbFileExtension.SelectedIndex = 4;
         }
 
+        private void InitializeResizeSettings()
+        {
+            var imageData = Image.FromFile(_originalFiles[0]);
+
+            for (var i = 1; i < _originalFiles.Length; i++)
+            {
+                if ( imageData.Width > imageData.Height )
+                    break;
+
+                imageData.Dispose();
+                imageData = Image.FromFile(_originalFiles[i]);
+            }
+
+            _resizeWidth = imageData.Width;
+            _resizeHeight = imageData.Height;
+
+            nudWidth.Value = _resizeWidth;
+            nudHeight.Value = _resizeHeight;
+            imageData.Dispose();
+        }
+
+        private void InitializeProgressBar()
+        {
+            pbResize.Value = 0;
+            pbResize.Maximum = _originalFiles.Length;
+            pbResize.Step = 1;
+        }
+
         private void OpenFolderBrowserDialog()
         {
             using (var dialog = new FolderBrowserDialog())
             {
-                if (dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                if ( dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath) )
                 {
                     _originalDirectory = dialog.SelectedPath;
 
                     txtPhotoDirectory.Text = _originalDirectory;
-                    Console.WriteLine(cmbFileExtension.SelectedItem);
                     _originalFiles = Directory.GetFiles(dialog.SelectedPath, "*" + cmbFileExtension.SelectedItem);
 
                     if ( _originalFiles.Length == 0 )
@@ -51,15 +74,16 @@ namespace BatchResize
                     }
 
                     btnResize.Enabled = true;
-
-                    InitializeSizeSettings();
+                    InitializeResizeSettings();
                 }
             }
         }
 
         private bool ProcessImages(int startPos = 0)
         {
-            if (startPos == 0)
+            ToggleControls(false);
+
+            if ( startPos == 0 )
                 InitializeProgressBar();
 
             try
@@ -74,14 +98,11 @@ namespace BatchResize
                         var newImage = ResizeImage(original);
                         original.Dispose();
 
-                        if ( rbOverwrite.Checked )
-                        {
-                            // Delete before saving new
-                            if ( File.Exists(_originalFiles[i]) )
-                                File.Delete(_originalFiles[i]);
+                        // Delete before saving new
+                        if ( File.Exists(_originalFiles[i]) )
+                            File.Delete(_originalFiles[i]);
 
-                            newImage.Save(_originalFiles[i], ImageFormat.Jpeg);
-                        }
+                        newImage.Save(_originalFiles[i], ImageFormat.Jpeg);
 
                         newImage.Dispose();
                     }
@@ -93,7 +114,8 @@ namespace BatchResize
             }
             catch (IOException ex)
             {
-                DialogResult result = MessageBox.Show(ex.Message, "File in use Exception", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
+                DialogResult result = MessageBox.Show(ex.Message, "File in use Exception",
+                    MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
 
                 switch (result)
                 {
@@ -106,12 +128,27 @@ namespace BatchResize
                 }
             }
 
+            ToggleControls(true);
             return true;
+        }
+
+        private void ToggleControls(bool state)
+        {
+            btnSelectDirectory.Enabled = state;
+            cmbFileExtension.Enabled = state;
+            btnResize.Enabled = state;
+            nudWidth.Enabled = state;
+            nudHeight.Enabled = state;
         }
 
         private Image ResizeImage(Image image)
         {
-            var newImage = new Bitmap((int)_resizeWidth, (int)_resizeHeight);
+            return image.Width > image.Height ? ResizeLandscape(image) : ResizePortrait(image);
+        }
+
+        private Image ResizeLandscape(Image image)
+        {
+            var newImage = new Bitmap((int) _resizeWidth, (int) _resizeHeight);
 
             using (var graphics = Graphics.FromImage(newImage))
             {
@@ -121,19 +158,16 @@ namespace BatchResize
             return newImage;
         }
 
-        private void InitializeSizeSettings()
+        private Image ResizePortrait(Image image)
         {
-            _resizeWidth = Image.FromFile(_originalFiles[0]).Size.Width;
-            _resizeHeight = Image.FromFile(_originalFiles[0]).Size.Height;
-            nudWidth.Value = _resizeWidth;
-            nudHeight.Value = _resizeHeight;
-        }
+            var newImage = new Bitmap((int)_resizeHeight, (int)_resizeWidth);
 
-        private void InitializeProgressBar()
-        {
-            pbResize.Value = 0;
-            pbResize.Maximum = _originalFiles.Length;
-            pbResize.Step = 1;
+            using (var graphics = Graphics.FromImage(newImage))
+            {
+                graphics.DrawImage(image, 0, 0, (int)_resizeHeight, (int)_resizeWidth);
+            }
+
+            return newImage;
         }
 
         private void btnSelectDirectory_Click(object sender, EventArgs e)
@@ -145,58 +179,24 @@ namespace BatchResize
         {
             bool result = ProcessImages();
 
-            var finalPath = _originalDirectory + (rbCopy.Checked ? "/" + _copyDirectory : "");
-
-            if (result)
-                MessageBox.Show("New resized photos have been saved to " + finalPath, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if ( result )
+                MessageBox.Show("New resized photos have been saved to " + _originalDirectory, "Success", MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             else
-                MessageBox.Show("Files were not changed as process was aborted.", "Something went wrong.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Files were not changed as process was aborted.", "Something went wrong.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            pbResize.Value = 0;
         }
 
         private void nudWidth_ValueChanged(object sender, EventArgs e)
         {
-            try
-            {
-                if ( chkAspectRatio.Checked && !_changeSize )
-                    _changeSize = true;
-
-                if ( _changeSize && chkAspectRatio.Checked )
-                {
-                    nudHeight.Value = (int) (nudWidth.Value*GetAspectRatio());
-                    _changeSize = false;
-                }
-
-                _resizeWidth = (int) nudWidth.Value;
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                MessageBox.Show("Value must be greater than 0.", "Value error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            _resizeWidth = (int) nudWidth.Value;
         }
 
         private void nudHeight_ValueChanged(object sender, EventArgs e)
         {
-            try {
-                if (chkAspectRatio.Checked && !_changeSize)
-                    _changeSize = true;
-
-                if (_changeSize && chkAspectRatio.Checked)
-                {
-                    nudWidth.Value = (int)(nudHeight.Value / GetAspectRatio());
-                    _changeSize = false;
-                }
-
-                _resizeHeight = (int)nudHeight.Value;
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                MessageBox.Show("Value must be greater than 0.", "Value error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private decimal GetAspectRatio()
-        {
-            return _resizeHeight / _resizeWidth;
+            _resizeHeight = (int) nudHeight.Value;
         }
     }
 }
