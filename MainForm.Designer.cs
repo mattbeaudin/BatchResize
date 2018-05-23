@@ -43,6 +43,7 @@ namespace BatchResize
             this.pbResize = new System.Windows.Forms.ProgressBar();
             this.cmbFileExtension = new System.Windows.Forms.ComboBox();
             this.lblGuide = new System.Windows.Forms.Label();
+            this.chkMaintainAspectRatio = new System.Windows.Forms.CheckBox();
             this.gbSaveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWidth)).BeginInit();
@@ -79,6 +80,7 @@ namespace BatchResize
             // 
             // gbSaveOptions
             // 
+            this.gbSaveOptions.Controls.Add(this.chkMaintainAspectRatio);
             this.gbSaveOptions.Controls.Add(this.lblGuide);
             this.gbSaveOptions.Controls.Add(this.nudHeight);
             this.gbSaveOptions.Controls.Add(this.lblNewHeight);
@@ -199,11 +201,21 @@ namespace BatchResize
             // 
             // lblGuide
             // 
-            this.lblGuide.Location = new System.Drawing.Point(173, 13);
+            this.lblGuide.Location = new System.Drawing.Point(181, 12);
             this.lblGuide.Name = "lblGuide";
-            this.lblGuide.Size = new System.Drawing.Size(373, 91);
+            this.lblGuide.Size = new System.Drawing.Size(365, 91);
             this.lblGuide.TabIndex = 10;
             this.lblGuide.Text = resources.GetString("lblGuide.Text");
+            // 
+            // chkMaintainAspectRatio
+            // 
+            this.chkMaintainAspectRatio.AutoSize = true;
+            this.chkMaintainAspectRatio.Location = new System.Drawing.Point(8, 71);
+            this.chkMaintainAspectRatio.Name = "chkMaintainAspectRatio";
+            this.chkMaintainAspectRatio.Size = new System.Drawing.Size(167, 21);
+            this.chkMaintainAspectRatio.TabIndex = 11;
+            this.chkMaintainAspectRatio.Text = "Maintain Aspect Ratio";
+            this.chkMaintainAspectRatio.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -245,6 +257,7 @@ namespace BatchResize
         private System.Windows.Forms.NumericUpDown nudWidth;
         private System.Windows.Forms.Label lblNewWidth;
         private ComboBox cmbFileExtension;
+        private CheckBox chkMaintainAspectRatio;
         private Label lblGuide;
     }
 }

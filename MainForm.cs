@@ -238,14 +238,31 @@ namespace BatchResize
 
         private void nudWidth_ValueChanged(object sender, EventArgs e)
         {
+            // Update height using aspect ratio if checked.
+            if (chkMaintainAspectRatio.Checked)
+                nudHeight.Value = nudWidth.Value / GetAspectRatio();
+
             // Update private width variable.
-            _resizeWidth = (int) nudWidth.Value;
+            _resizeWidth = nudWidth.Value;
         }
 
         private void nudHeight_ValueChanged(object sender, EventArgs e)
         {
+            // Update width using aspect ratio if checked.
+            if (chkMaintainAspectRatio.Checked)
+                nudWidth.Value = nudHeight.Value * GetAspectRatio();
+
             // Update private height variable.
-            _resizeHeight = (int) nudHeight.Value;
+            _resizeHeight = nudHeight.Value;
+        }
+
+        /// <summary>
+        /// Gets aspect ratio to find new height/width.
+        /// </summary>
+        /// <returns>Aspect ratio</returns>
+        private decimal GetAspectRatio()
+        {
+            return _resizeWidth / _resizeHeight;
         }
     }
 }
