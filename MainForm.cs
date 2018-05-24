@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using BatchResize.Classes;
 
@@ -10,6 +11,7 @@ namespace BatchResize
     {
         private string _originalDirectory;
         private string[] _originalFiles;
+        private string _outputDirectory;
 
         private decimal _resizeWidth = 1920;
         private decimal _resizeHeight = 1080;
@@ -23,10 +25,8 @@ namespace BatchResize
                 cmbFileExtension.Items.Add(format);
 
             cmbFileExtension.SelectedIndex = 2;
-        }
+            btnSelectDirectory.Select();
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
             nudWidth.Value = _resizeWidth;
             nudHeight.Value = _resizeHeight;
         }
@@ -37,7 +37,7 @@ namespace BatchResize
         /// </summary>
         private void InitializeResizeSettings()
         {
-            var imageData = Image.FromFile(_originalFiles[0]);
+            var imageData = Image.FromFile(Path.Combine(_originalDirectory, _originalFiles[0]));
 
             for (var i = 1; i < _originalFiles.Length; i++)
             {
@@ -46,7 +46,7 @@ namespace BatchResize
 
                 // Make sure to dispose so file is let go.
                 imageData.Dispose();
-                imageData = Image.FromFile(_originalFiles[i]);
+                imageData = Image.FromFile(Path.Combine(_originalDirectory, _originalFiles[i]));
             }
 
             // Set private vars as well as controls.
@@ -80,7 +80,16 @@ namespace BatchResize
                     _originalDirectory = dialog.SelectedPath;
 
                     txtPhotoDirectory.Text = _originalDirectory;
-                    _originalFiles = Directory.GetFiles(dialog.SelectedPath, "*" + cmbFileExtension.SelectedItem);
+
+                    // Only get the file name, not the directory.
+                    var nameIndex = _originalDirectory.Length;
+
+                    if ( !_originalDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()) )
+                        nameIndex++;
+
+                    _originalFiles = Directory.EnumerateFiles(_originalDirectory, "*" + cmbFileExtension.SelectedItem,
+                                    SearchOption.AllDirectories)
+                                    .Select(file => file.Substring(nameIndex)).ToArray();
 
                     if ( _originalFiles.Length == 0 )
                     {
@@ -92,6 +101,30 @@ namespace BatchResize
 
                     btnResize.Enabled = true;
                     InitializeResizeSettings();
+                }
+            }
+        }
+
+        private void btnCopyDir_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new FolderBrowserDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                {
+                    // If there are files in the directory and user doesn't want to continue, don't set output directory.
+                    if ( Directory.GetFiles(dialog.SelectedPath).Length > 0 )
+                    {
+                        if ( MessageBox.Show(
+                                 "There are files in this directory that may be overwritten. Would you like to continue?",
+                                 "Files could possibly be overwritten.",
+                                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No )
+                        {
+                            return;
+                        }
+                    }
+
+                    _outputDirectory = dialog.SelectedPath;
+                    txtOutputDirectory.Text = _outputDirectory;
                 }
             }
         }
@@ -115,21 +148,35 @@ namespace BatchResize
 
             try
             {
+                var outputDir = _originalDirectory;
+
+                if ( rbCopy.Checked )
+                    outputDir = _outputDirectory;
+
+                if ( string.IsNullOrWhiteSpace(outputDir) || !Directory.Exists(outputDir) )
+                {
+                    MessageBox.Show("No output directory was selected. Please select one before resizing images", "Something went wrong.",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+
                 if ( Directory.Exists(_originalDirectory) )
                 {
                     for (var i = startPos; i < _originalFiles.Length; i++)
                     {
                         startPos++;
                         pbResize.PerformStep();
-                        var original = Image.FromFile(_originalFiles[i]);
+                        var original = Image.FromFile(Path.Combine(_originalDirectory, _originalFiles[i]));
                         var newImage = ResizeImage(original);
                         original.Dispose();
 
-                        // Delete before saving new (update)
-                        if ( File.Exists(_originalFiles[i]) )
-                            File.Delete(_originalFiles[i]);
+                        var outputPath = Path.Combine(outputDir, _originalFiles[i]);
 
-                        newImage.Save(_originalFiles[i], imageFormat);
+                        // Delete before saving new (update)
+                        if ( File.Exists(outputPath) )
+                            File.Delete(outputPath);
+
+                        newImage.Save(outputPath, imageFormat);
 
                         newImage.Dispose();
                     }
@@ -142,7 +189,7 @@ namespace BatchResize
             catch (IOException ex)
             {
                 // Capture exception if current file is in use by another process.
-                DialogResult result = MessageBox.Show(ex.Message, "File in use Exception",
+                DialogResult result = MessageBox.Show($"File is being used by another process. {ex.Message}", "File in use Exception",
                     MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
 
                 // If user wants to retry, run ProcessImages from beginning.
@@ -155,6 +202,7 @@ namespace BatchResize
                     case DialogResult.Ignore:
                         return ProcessImages(startPos);
                     default:
+                        ToggleControls(true);
                         return false;
                 }
             }
@@ -175,6 +223,7 @@ namespace BatchResize
             btnResize.Enabled = state;
             nudWidth.Enabled = state;
             nudHeight.Enabled = state;
+            btnCopyDir.Enabled = state;
         }
 
         /// <summary>
@@ -198,7 +247,7 @@ namespace BatchResize
 
             using (var graphics = Graphics.FromImage(newImage))
             {
-                graphics.DrawImage(image, 0, 0, (int)_resizeWidth, (int)_resizeHeight);
+                graphics.DrawImage(image, 0, 0, (int) _resizeWidth, (int) _resizeHeight);
             }
 
             return newImage;
@@ -211,11 +260,11 @@ namespace BatchResize
         /// <returns>Properly resized image.</returns>
         private Image ResizePortrait(Image image)
         {
-            var newImage = new Bitmap((int)_resizeHeight, (int)_resizeWidth);
+            var newImage = new Bitmap((int) _resizeHeight, (int) _resizeWidth);
 
             using (var graphics = Graphics.FromImage(newImage))
             {
-                graphics.DrawImage(image, 0, 0, (int)_resizeHeight, (int)_resizeWidth);
+                graphics.DrawImage(image, 0, 0, (int) _resizeHeight, (int) _resizeWidth);
             }
 
             return newImage;
@@ -227,11 +276,19 @@ namespace BatchResize
             bool result = ProcessImages();
 
             if ( result )
-                MessageBox.Show("New resized photos have been saved to " + _originalDirectory, "Success", MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+            {
+                if (rbCopy.Checked)
+                    MessageBox.Show($"New resized photos have been saved to {_outputDirectory}", "Success",
+                   MessageBoxButtons.OK,
+                   MessageBoxIcon.Information);
+                else
+                    MessageBox.Show($"New resized photos have been saved to {_originalDirectory}", "Success",
+                   MessageBoxButtons.OK,
+                   MessageBoxIcon.Information);
+            }
             else
                 MessageBox.Show("Files were not changed as process was aborted.", "Something went wrong.",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             // Reset progress bar when done.
             pbResize.Value = 0;
@@ -245,7 +302,7 @@ namespace BatchResize
         private void nudWidth_ValueChanged(object sender, EventArgs e)
         {
             // Update height using aspect ratio if checked.
-            if (chkMaintainAspectRatio.Checked)
+            if ( chkMaintainAspectRatio.Checked )
                 nudHeight.Value = nudWidth.Value / GetAspectRatio();
 
             // Update private width variable.
@@ -255,7 +312,7 @@ namespace BatchResize
         private void nudHeight_ValueChanged(object sender, EventArgs e)
         {
             // Update width using aspect ratio if checked.
-            if (chkMaintainAspectRatio.Checked)
+            if ( chkMaintainAspectRatio.Checked )
                 nudWidth.Value = nudHeight.Value * GetAspectRatio();
 
             // Update private height variable.
@@ -269,6 +326,11 @@ namespace BatchResize
         private decimal GetAspectRatio()
         {
             return _resizeWidth / _resizeHeight;
+        }
+
+        private void rbCopy_CheckedChanged(object sender, EventArgs e)
+        {
+            pnlCopyControls.Visible = rbCopy.Checked;
         }
     }
 }

@@ -34,7 +34,9 @@ namespace BatchResize
             this.txtPhotoDirectory = new System.Windows.Forms.TextBox();
             this.lblPhotoDirectory = new System.Windows.Forms.Label();
             this.btnSelectDirectory = new System.Windows.Forms.Button();
-            this.gbSaveOptions = new System.Windows.Forms.GroupBox();
+            this.gbResizeOptions = new System.Windows.Forms.GroupBox();
+            this.chkMaintainAspectRatio = new System.Windows.Forms.CheckBox();
+            this.lblGuide = new System.Windows.Forms.Label();
             this.nudHeight = new System.Windows.Forms.NumericUpDown();
             this.lblNewHeight = new System.Windows.Forms.Label();
             this.nudWidth = new System.Windows.Forms.NumericUpDown();
@@ -42,16 +44,24 @@ namespace BatchResize
             this.btnResize = new System.Windows.Forms.Button();
             this.pbResize = new System.Windows.Forms.ProgressBar();
             this.cmbFileExtension = new System.Windows.Forms.ComboBox();
-            this.lblGuide = new System.Windows.Forms.Label();
-            this.chkMaintainAspectRatio = new System.Windows.Forms.CheckBox();
-            this.gbSaveOptions.SuspendLayout();
+            this.gbSaveOptions = new System.Windows.Forms.GroupBox();
+            this.pnlCopyControls = new System.Windows.Forms.Panel();
+            this.btnCopyDir = new System.Windows.Forms.Button();
+            this.lblCopy = new System.Windows.Forms.Label();
+            this.txtOutputDirectory = new System.Windows.Forms.TextBox();
+            this.rbCopy = new System.Windows.Forms.RadioButton();
+            this.rbOverwrite = new System.Windows.Forms.RadioButton();
+            this.gbResizeOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWidth)).BeginInit();
+            this.gbSaveOptions.SuspendLayout();
+            this.pnlCopyControls.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtPhotoDirectory
             // 
             this.txtPhotoDirectory.BackColor = System.Drawing.SystemColors.Window;
+            this.txtPhotoDirectory.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.txtPhotoDirectory.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPhotoDirectory.Location = new System.Drawing.Point(12, 30);
             this.txtPhotoDirectory.Name = "txtPhotoDirectory";
@@ -78,20 +88,38 @@ namespace BatchResize
             this.btnSelectDirectory.UseVisualStyleBackColor = true;
             this.btnSelectDirectory.Click += new System.EventHandler(this.btnSelectDirectory_Click);
             // 
-            // gbSaveOptions
+            // gbResizeOptions
             // 
-            this.gbSaveOptions.Controls.Add(this.chkMaintainAspectRatio);
-            this.gbSaveOptions.Controls.Add(this.lblGuide);
-            this.gbSaveOptions.Controls.Add(this.nudHeight);
-            this.gbSaveOptions.Controls.Add(this.lblNewHeight);
-            this.gbSaveOptions.Controls.Add(this.nudWidth);
-            this.gbSaveOptions.Controls.Add(this.lblNewWidth);
-            this.gbSaveOptions.Location = new System.Drawing.Point(12, 59);
-            this.gbSaveOptions.Name = "gbSaveOptions";
-            this.gbSaveOptions.Size = new System.Drawing.Size(552, 106);
-            this.gbSaveOptions.TabIndex = 6;
-            this.gbSaveOptions.TabStop = false;
-            this.gbSaveOptions.Text = "Save Options";
+            this.gbResizeOptions.Controls.Add(this.chkMaintainAspectRatio);
+            this.gbResizeOptions.Controls.Add(this.lblGuide);
+            this.gbResizeOptions.Controls.Add(this.nudHeight);
+            this.gbResizeOptions.Controls.Add(this.lblNewHeight);
+            this.gbResizeOptions.Controls.Add(this.nudWidth);
+            this.gbResizeOptions.Controls.Add(this.lblNewWidth);
+            this.gbResizeOptions.Location = new System.Drawing.Point(12, 145);
+            this.gbResizeOptions.Name = "gbResizeOptions";
+            this.gbResizeOptions.Size = new System.Drawing.Size(552, 106);
+            this.gbResizeOptions.TabIndex = 6;
+            this.gbResizeOptions.TabStop = false;
+            this.gbResizeOptions.Text = "Resize Options";
+            // 
+            // chkMaintainAspectRatio
+            // 
+            this.chkMaintainAspectRatio.AutoSize = true;
+            this.chkMaintainAspectRatio.Location = new System.Drawing.Point(8, 71);
+            this.chkMaintainAspectRatio.Name = "chkMaintainAspectRatio";
+            this.chkMaintainAspectRatio.Size = new System.Drawing.Size(167, 21);
+            this.chkMaintainAspectRatio.TabIndex = 11;
+            this.chkMaintainAspectRatio.Text = "Maintain Aspect Ratio";
+            this.chkMaintainAspectRatio.UseVisualStyleBackColor = true;
+            // 
+            // lblGuide
+            // 
+            this.lblGuide.Location = new System.Drawing.Point(181, 12);
+            this.lblGuide.Name = "lblGuide";
+            this.lblGuide.Size = new System.Drawing.Size(365, 91);
+            this.lblGuide.TabIndex = 10;
+            this.lblGuide.Text = resources.GetString("lblGuide.Text");
             // 
             // nudHeight
             // 
@@ -160,7 +188,7 @@ namespace BatchResize
             // btnResize
             // 
             this.btnResize.Enabled = false;
-            this.btnResize.Location = new System.Drawing.Point(12, 171);
+            this.btnResize.Location = new System.Drawing.Point(12, 257);
             this.btnResize.Name = "btnResize";
             this.btnResize.Size = new System.Drawing.Size(121, 33);
             this.btnResize.TabIndex = 7;
@@ -170,7 +198,7 @@ namespace BatchResize
             // 
             // pbResize
             // 
-            this.pbResize.Location = new System.Drawing.Point(139, 171);
+            this.pbResize.Location = new System.Drawing.Point(139, 257);
             this.pbResize.Name = "pbResize";
             this.pbResize.Size = new System.Drawing.Size(425, 33);
             this.pbResize.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
@@ -185,33 +213,93 @@ namespace BatchResize
             this.cmbFileExtension.Size = new System.Drawing.Size(79, 24);
             this.cmbFileExtension.TabIndex = 9;
             // 
-            // lblGuide
+            // gbSaveOptions
             // 
-            this.lblGuide.Location = new System.Drawing.Point(181, 12);
-            this.lblGuide.Name = "lblGuide";
-            this.lblGuide.Size = new System.Drawing.Size(365, 91);
-            this.lblGuide.TabIndex = 10;
-            this.lblGuide.Text = resources.GetString("lblGuide.Text");
+            this.gbSaveOptions.Controls.Add(this.pnlCopyControls);
+            this.gbSaveOptions.Controls.Add(this.rbCopy);
+            this.gbSaveOptions.Controls.Add(this.rbOverwrite);
+            this.gbSaveOptions.Location = new System.Drawing.Point(12, 55);
+            this.gbSaveOptions.Name = "gbSaveOptions";
+            this.gbSaveOptions.Size = new System.Drawing.Size(552, 84);
+            this.gbSaveOptions.TabIndex = 10;
+            this.gbSaveOptions.TabStop = false;
+            this.gbSaveOptions.Text = "Save Options";
             // 
-            // chkMaintainAspectRatio
+            // pnlCopyControls
             // 
-            this.chkMaintainAspectRatio.AutoSize = true;
-            this.chkMaintainAspectRatio.Location = new System.Drawing.Point(8, 71);
-            this.chkMaintainAspectRatio.Name = "chkMaintainAspectRatio";
-            this.chkMaintainAspectRatio.Size = new System.Drawing.Size(167, 21);
-            this.chkMaintainAspectRatio.TabIndex = 11;
-            this.chkMaintainAspectRatio.Text = "Maintain Aspect Ratio";
-            this.chkMaintainAspectRatio.UseVisualStyleBackColor = true;
+            this.pnlCopyControls.BackColor = System.Drawing.Color.Transparent;
+            this.pnlCopyControls.Controls.Add(this.btnCopyDir);
+            this.pnlCopyControls.Controls.Add(this.lblCopy);
+            this.pnlCopyControls.Controls.Add(this.txtOutputDirectory);
+            this.pnlCopyControls.Location = new System.Drawing.Point(205, 13);
+            this.pnlCopyControls.Name = "pnlCopyControls";
+            this.pnlCopyControls.Size = new System.Drawing.Size(341, 71);
+            this.pnlCopyControls.TabIndex = 2;
+            this.pnlCopyControls.Visible = false;
+            // 
+            // btnCopyDir
+            // 
+            this.btnCopyDir.Location = new System.Drawing.Point(177, 39);
+            this.btnCopyDir.Name = "btnCopyDir";
+            this.btnCopyDir.Size = new System.Drawing.Size(161, 26);
+            this.btnCopyDir.TabIndex = 3;
+            this.btnCopyDir.Text = "Select Output Folder";
+            this.btnCopyDir.UseVisualStyleBackColor = true;
+            this.btnCopyDir.Click += new System.EventHandler(this.btnCopyDir_Click);
+            // 
+            // lblCopy
+            // 
+            this.lblCopy.AutoSize = true;
+            this.lblCopy.Location = new System.Drawing.Point(3, 0);
+            this.lblCopy.Name = "lblCopy";
+            this.lblCopy.Size = new System.Drawing.Size(117, 17);
+            this.lblCopy.TabIndex = 2;
+            this.lblCopy.Text = "Copy to Directory";
+            // 
+            // txtOutputDirectory
+            // 
+            this.txtOutputDirectory.BackColor = System.Drawing.SystemColors.Window;
+            this.txtOutputDirectory.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.txtOutputDirectory.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtOutputDirectory.Location = new System.Drawing.Point(3, 20);
+            this.txtOutputDirectory.Name = "txtOutputDirectory";
+            this.txtOutputDirectory.ReadOnly = true;
+            this.txtOutputDirectory.Size = new System.Drawing.Size(335, 19);
+            this.txtOutputDirectory.TabIndex = 1;
+            // 
+            // rbCopy
+            // 
+            this.rbCopy.AutoSize = true;
+            this.rbCopy.Location = new System.Drawing.Point(11, 48);
+            this.rbCopy.Name = "rbCopy";
+            this.rbCopy.Size = new System.Drawing.Size(146, 21);
+            this.rbCopy.TabIndex = 1;
+            this.rbCopy.Text = "Copy to new folder";
+            this.rbCopy.UseVisualStyleBackColor = true;
+            this.rbCopy.CheckedChanged += new System.EventHandler(this.rbCopy_CheckedChanged);
+            // 
+            // rbOverwrite
+            // 
+            this.rbOverwrite.AutoSize = true;
+            this.rbOverwrite.Checked = true;
+            this.rbOverwrite.Location = new System.Drawing.Point(11, 25);
+            this.rbOverwrite.Name = "rbOverwrite";
+            this.rbOverwrite.Size = new System.Drawing.Size(188, 21);
+            this.rbOverwrite.TabIndex = 0;
+            this.rbOverwrite.TabStop = true;
+            this.rbOverwrite.Text = "Overwrite original images";
+            this.rbOverwrite.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(576, 213);
+            this.ClientSize = new System.Drawing.Size(576, 299);
+            this.Controls.Add(this.gbSaveOptions);
             this.Controls.Add(this.cmbFileExtension);
             this.Controls.Add(this.pbResize);
             this.Controls.Add(this.btnResize);
-            this.Controls.Add(this.gbSaveOptions);
+            this.Controls.Add(this.gbResizeOptions);
             this.Controls.Add(this.btnSelectDirectory);
             this.Controls.Add(this.lblPhotoDirectory);
             this.Controls.Add(this.txtPhotoDirectory);
@@ -220,11 +308,14 @@ namespace BatchResize
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Batch Image Resizer";
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.gbSaveOptions.ResumeLayout(false);
-            this.gbSaveOptions.PerformLayout();
+            this.gbResizeOptions.ResumeLayout(false);
+            this.gbResizeOptions.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWidth)).EndInit();
+            this.gbSaveOptions.ResumeLayout(false);
+            this.gbSaveOptions.PerformLayout();
+            this.pnlCopyControls.ResumeLayout(false);
+            this.pnlCopyControls.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -235,7 +326,7 @@ namespace BatchResize
         private System.Windows.Forms.TextBox txtPhotoDirectory;
         private System.Windows.Forms.Label lblPhotoDirectory;
         private System.Windows.Forms.Button btnSelectDirectory;
-        private System.Windows.Forms.GroupBox gbSaveOptions;
+        private System.Windows.Forms.GroupBox gbResizeOptions;
         private System.Windows.Forms.Button btnResize;
         private System.Windows.Forms.ProgressBar pbResize;
         private System.Windows.Forms.NumericUpDown nudHeight;
@@ -245,6 +336,13 @@ namespace BatchResize
         private ComboBox cmbFileExtension;
         private CheckBox chkMaintainAspectRatio;
         private Label lblGuide;
+        private GroupBox gbSaveOptions;
+        private RadioButton rbCopy;
+        private RadioButton rbOverwrite;
+        private Panel pnlCopyControls;
+        private Label lblCopy;
+        private TextBox txtOutputDirectory;
+        private Button btnCopyDir;
     }
 }
 
