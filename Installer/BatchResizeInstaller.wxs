@@ -8,7 +8,7 @@
       Comments='A dead simple batch image resizer.' Manufacturer='Matthew Beaudin'
       InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
-    <WixVariable Id="WixUILicenseRtf" Value="../LICENSE.rtf" />
+    <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
     <Media Id='1' Cabinet='BatchResize.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
     <Property Id='DiskPrompt' Value="BatchResize v1.0.0 Installation [1]" />
 
