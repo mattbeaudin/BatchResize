@@ -62,11 +62,11 @@ namespace BatchResize
             // 
             this.txtPhotoDirectory.BackColor = System.Drawing.SystemColors.Window;
             this.txtPhotoDirectory.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.txtPhotoDirectory.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPhotoDirectory.Location = new System.Drawing.Point(12, 30);
+            this.txtPhotoDirectory.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtPhotoDirectory.Location = new System.Drawing.Point(12, 29);
             this.txtPhotoDirectory.Name = "txtPhotoDirectory";
             this.txtPhotoDirectory.ReadOnly = true;
-            this.txtPhotoDirectory.Size = new System.Drawing.Size(321, 19);
+            this.txtPhotoDirectory.Size = new System.Drawing.Size(321, 22);
             this.txtPhotoDirectory.TabIndex = 0;
             // 
             // lblPhotoDirectory
@@ -106,7 +106,7 @@ namespace BatchResize
             // chkMaintainAspectRatio
             // 
             this.chkMaintainAspectRatio.AutoSize = true;
-            this.chkMaintainAspectRatio.Location = new System.Drawing.Point(8, 71);
+            this.chkMaintainAspectRatio.Location = new System.Drawing.Point(14, 74);
             this.chkMaintainAspectRatio.Name = "chkMaintainAspectRatio";
             this.chkMaintainAspectRatio.Size = new System.Drawing.Size(167, 21);
             this.chkMaintainAspectRatio.TabIndex = 11;
@@ -115,9 +115,9 @@ namespace BatchResize
             // 
             // lblGuide
             // 
-            this.lblGuide.Location = new System.Drawing.Point(181, 12);
+            this.lblGuide.Location = new System.Drawing.Point(183, 12);
             this.lblGuide.Name = "lblGuide";
-            this.lblGuide.Size = new System.Drawing.Size(365, 91);
+            this.lblGuide.Size = new System.Drawing.Size(368, 91);
             this.lblGuide.TabIndex = 10;
             this.lblGuide.Text = resources.GetString("lblGuide.Text");
             // 
@@ -239,7 +239,7 @@ namespace BatchResize
             // 
             // btnCopyDir
             // 
-            this.btnCopyDir.Location = new System.Drawing.Point(177, 39);
+            this.btnCopyDir.Location = new System.Drawing.Point(177, 40);
             this.btnCopyDir.Name = "btnCopyDir";
             this.btnCopyDir.Size = new System.Drawing.Size(161, 26);
             this.btnCopyDir.TabIndex = 3;
@@ -260,11 +260,11 @@ namespace BatchResize
             // 
             this.txtOutputDirectory.BackColor = System.Drawing.SystemColors.Window;
             this.txtOutputDirectory.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.txtOutputDirectory.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtOutputDirectory.Location = new System.Drawing.Point(3, 20);
+            this.txtOutputDirectory.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtOutputDirectory.Location = new System.Drawing.Point(3, 18);
             this.txtOutputDirectory.Name = "txtOutputDirectory";
             this.txtOutputDirectory.ReadOnly = true;
-            this.txtOutputDirectory.Size = new System.Drawing.Size(335, 19);
+            this.txtOutputDirectory.Size = new System.Drawing.Size(335, 22);
             this.txtOutputDirectory.TabIndex = 1;
             // 
             // rbCopy
@@ -294,6 +294,7 @@ namespace BatchResize
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(576, 299);
             this.Controls.Add(this.gbSaveOptions);
             this.Controls.Add(this.cmbFileExtension);

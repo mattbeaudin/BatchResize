@@ -4,7 +4,7 @@ A dead simple batch image resizer that's efficient and easy to use.
 ## Getting Started
 If you're going to be doing development that doesn't involve adding more dependencies all you need to do is clone the repo and open it inside of Visual Studio.
 
-If you plan on making changes that involve adding dependencies then you're going to need [WiX Toolset.](http://wixtoolset.org/) This is the tool I use to create the Windows installation package using XML.
+If you plan on making changes that involve adding dependencies then you're going to need [WiX Toolset.](http://wixtoolset.org/releases/) This is the tool I use to create the Windows installation package using XML.
 
 
 ## Compiling the Windows Installer
@@ -22,7 +22,6 @@ If you plan on making changes that involve adding dependencies then you're going
 ### Without Environment Variables:
 ```
 > "C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe" BatchResizeInstaller.wxs
-
 > "C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe" -ext WixUIExtension BatchResizeInstaller.wixobj
 ```
 
