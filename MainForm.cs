@@ -77,18 +77,18 @@ namespace BatchResize
             {
                 if ( dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath) )
                 {
-                    _originalDirectory = dialog.SelectedPath;
-
-                    txtPhotoDirectory.Text = _originalDirectory;
+                    var path = dialog.SelectedPath;
 
                     // Only get the file name, not the directory.
-                    var nameIndex = _originalDirectory.Length;
+                    var nameIndex = path.Length;
 
-                    if ( !_originalDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()) )
+                    if ( !path.EndsWith(Path.DirectorySeparatorChar.ToString()) )
                         nameIndex++;
 
-                    _originalFiles = Directory.EnumerateFiles(_originalDirectory, "*" + cmbFileExtension.SelectedItem,
-                                    SearchOption.AllDirectories)
+
+                    // TODO -> Add SearchOptions for user to select.
+                    _originalFiles = Directory.EnumerateFiles(path, "*" + cmbFileExtension.SelectedItem,
+                                    SearchOption.TopDirectoryOnly)
                                     .Select(file => file.Substring(nameIndex)).ToArray();
 
                     if ( _originalFiles.Length == 0 )
@@ -99,6 +99,8 @@ namespace BatchResize
                         return;
                     }
 
+                    _originalDirectory = path;
+                    txtPhotoDirectory.Text = _originalDirectory;
                     btnResize.Enabled = true;
                     InitializeResizeSettings();
                 }
@@ -303,7 +305,7 @@ namespace BatchResize
         {
             // Update height using aspect ratio if checked.
             if ( chkMaintainAspectRatio.Checked )
-                nudHeight.Value = nudWidth.Value / GetAspectRatio();
+                nudHeight.Value = Math.Ceiling(nudWidth.Value / GetAspectRatio());
 
             // Update private width variable.
             _resizeWidth = nudWidth.Value;
@@ -313,7 +315,7 @@ namespace BatchResize
         {
             // Update width using aspect ratio if checked.
             if ( chkMaintainAspectRatio.Checked )
-                nudWidth.Value = nudHeight.Value * GetAspectRatio();
+                nudWidth.Value = Math.Ceiling(nudHeight.Value * GetAspectRatio());
 
             // Update private height variable.
             _resizeHeight = nudHeight.Value;
