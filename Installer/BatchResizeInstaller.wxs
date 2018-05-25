@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <Product Name='BatchResize v1.0.0' Id='5F74A270-30B7-49FA-870F-AB5BC065E994' UpgradeCode='5F74A270-30B7-49FA-870F-AB5BC065E995'
+    Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Matthew Beaudin'>
+
+    <Package Id='*' Keywords='Installer'
+      Description="BatchResize v1.0.0 Installer"
+      Comments='A dead simple batch image resizer.' Manufacturer='Matthew Beaudin'
+      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+
+    <WixVariable Id="WixUILicenseRtf" Value="../LICENSE.rtf" />
+    <Media Id='1' Cabinet='BatchResize.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
+    <Property Id='DiskPrompt' Value="BatchResize v1.0.0 Installation [1]" />
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder' Name='PFiles'>
+        <Directory Id='BatchResize' Name='BatchResize'>
+          <Directory Id='INSTALLDIR' Name='BatchResize v1.0.0'>
+
+            <Component Id='MainExecutable' Guid='5F74A270-30B7-49FA-870F-AB5BC065E996'>
+              <File Id='BatchResizeEXE' Name='BatchResize.exe' DiskId='1' Source='../bin/Release/BatchResize.exe' KeyPath='yes'>
+                <Shortcut Id="desktopBatchResize10" Directory="DesktopFolder" Name="BatchResize v1.0.0" WorkingDirectory='INSTALLDIR' Icon="BatchResize.exe" IconIndex="0" Advertise="yes" />
+              </File>
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+
+    <Feature Id='Complete' Title='BatchResize v1.0.0' Description='The complete package.'
+      Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+      <Feature Id='MainProgram' Title='Program' Description='The main executable.' Level='1'>
+        <ComponentRef Id='MainExecutable' />
+      </Feature>
+    </Feature>
+
+    <UIRef Id="WixUI_Mondo" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Icon Id="BatchResize.exe" SourceFile="../bin/Release/BatchResize.exe" />
+
+  </Product>
+</Wix>
