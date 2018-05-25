@@ -244,5 +244,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-# Ignore /dist/BatchResize.exe
-!dist/BatchResize.exe
+# Installer files
+Installer/BatchResizeInstaller.wixobj
+Installer/BatchResizeInstaller.wixpdb
