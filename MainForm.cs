@@ -16,6 +16,9 @@ namespace BatchResize
         private decimal _resizeWidth = 1920;
         private decimal _resizeHeight = 1080;
 
+        /// <summary>
+        /// Form constructor. Sets up default form selections for easier use.
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
@@ -107,6 +110,11 @@ namespace BatchResize
             }
         }
 
+        /// <summary>
+        /// Open folder browser dialog to select an output directory.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnCopyDir_Click(object sender, EventArgs e)
         {
             using (var dialog = new FolderBrowserDialog())
@@ -272,6 +280,11 @@ namespace BatchResize
             return newImage;
         }
 
+        /// <summary>
+        /// Starts processing images and evaluates the results.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnResize_Click(object sender, EventArgs e)
         {
             // Run ProcessImages and grab result.
@@ -296,29 +309,44 @@ namespace BatchResize
             pbResize.Value = 0;
         }
 
+        /// <summary>
+        /// Opens folder browser dialog to select what directory to process.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSelectDirectory_Click(object sender, EventArgs e)
         {
             OpenFolderBrowserDialog();
         }
 
+        /// <summary>
+        /// Update _resizeWidth when nudWidth changes and update nudHeight if MaintainAspectRatio is checked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void nudWidth_ValueChanged(object sender, EventArgs e)
         {
             // Update height using aspect ratio if checked.
             if ( chkMaintainAspectRatio.Checked )
-                nudHeight.Value = Math.Ceiling(nudWidth.Value / GetAspectRatio());
+                nudHeight.Value = nudWidth.Value / GetAspectRatio();
 
             // Update private width variable.
-            _resizeWidth = nudWidth.Value;
+            _resizeWidth = Math.Round(nudWidth.Value);
         }
 
+        /// <summary>
+        /// Update _resizeHeight when nudHeight changes and update nudWidth if MaintainAspectRatio is checked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void nudHeight_ValueChanged(object sender, EventArgs e)
         {
             // Update width using aspect ratio if checked.
             if ( chkMaintainAspectRatio.Checked )
-                nudWidth.Value = Math.Ceiling(nudHeight.Value * GetAspectRatio());
+                nudWidth.Value = nudHeight.Value * GetAspectRatio();
 
             // Update private height variable.
-            _resizeHeight = nudHeight.Value;
+            _resizeHeight = Math.Round(nudHeight.Value);
         }
 
         /// <summary>
@@ -330,6 +358,11 @@ namespace BatchResize
             return _resizeWidth / _resizeHeight;
         }
 
+        /// <summary>
+        /// Toggle the visibility of pnlCopyControls.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rbCopy_CheckedChanged(object sender, EventArgs e)
         {
             pnlCopyControls.Visible = rbCopy.Checked;

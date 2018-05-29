@@ -125,7 +125,7 @@ namespace BatchResize
             // 
             this.nudHeight.Location = new System.Drawing.Point(95, 43);
             this.nudHeight.Maximum = new decimal(new int[] {
-            3000,
+            10000,
             0,
             0,
             0});
@@ -157,7 +157,7 @@ namespace BatchResize
             // 
             this.nudWidth.Location = new System.Drawing.Point(14, 43);
             this.nudWidth.Maximum = new decimal(new int[] {
-            4000,
+            10000,
             0,
             0,
             0});
