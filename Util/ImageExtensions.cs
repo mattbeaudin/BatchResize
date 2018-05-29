@@ -1,6 +1,6 @@
 ﻿using System.Drawing.Imaging;
 
-namespace BatchResize.Classes
+namespace BatchResize.Util
 {
     public class ImageExtensions
     {

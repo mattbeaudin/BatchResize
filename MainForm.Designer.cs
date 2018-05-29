@@ -329,21 +329,21 @@ namespace BatchResize
         private System.Windows.Forms.Button btnSelectDirectory;
         private System.Windows.Forms.GroupBox gbResizeOptions;
         private System.Windows.Forms.Button btnResize;
-        private System.Windows.Forms.ProgressBar pbResize;
         private System.Windows.Forms.NumericUpDown nudHeight;
         private System.Windows.Forms.Label lblNewHeight;
         private System.Windows.Forms.NumericUpDown nudWidth;
         private System.Windows.Forms.Label lblNewWidth;
-        private ComboBox cmbFileExtension;
         private CheckBox chkMaintainAspectRatio;
         private Label lblGuide;
         private GroupBox gbSaveOptions;
-        private RadioButton rbCopy;
-        private RadioButton rbOverwrite;
         private Panel pnlCopyControls;
         private Label lblCopy;
         private TextBox txtOutputDirectory;
         private Button btnCopyDir;
+        public ComboBox cmbFileExtension;
+        public RadioButton rbCopy;
+        public RadioButton rbOverwrite;
+        public ProgressBar pbResize;
     }
 }
 
