@@ -223,7 +223,7 @@ namespace BatchResize
                 nudHeight.Value = nudWidth.Value / GetAspectRatio();
 
             // Update private width variable.
-            ResizeWidth = Math.Round(nudWidth.Value);
+            ResizeWidth = nudWidth.Value;
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace BatchResize
                 nudWidth.Value = nudHeight.Value * GetAspectRatio();
 
             // Update private height variable.
-            ResizeHeight = Math.Round(nudHeight.Value);
+            ResizeHeight = nudHeight.Value;
         }
 
         /// <summary>

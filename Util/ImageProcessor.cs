@@ -28,23 +28,23 @@ namespace BatchResize.Util
         {
             // Get ImageFormat to save new images as.
             var imageFormat = ImageFormat.Jpeg;
-            _frmMain.Invoke(
+            _frmMain.BeginInvoke(
                 (MethodInvoker)
                 (() => imageFormat = ImageExtensions.GetImageFormat((string) _frmMain.cmbFileExtension.SelectedItem)));
 
             // Disable controls so user can't harm the process.
-            _frmMain.Invoke((MethodInvoker)(() => _frmMain.ToggleControls(false)));
+            _frmMain.BeginInvoke((MethodInvoker)(() => _frmMain.ToggleControls(false)));
 
             // Reset progress bar if starting from beginning.
             if (startPos == 0)
-                _frmMain.Invoke((MethodInvoker)(() => _frmMain.InitializeProgressBar()));
+                _frmMain.BeginInvoke((MethodInvoker)(() => _frmMain.InitializeProgressBar()));
 
             try
             {
                 var outputDir = _frmMain.OriginalDirectory;
 
                 var copy = false;
-                _frmMain.Invoke((MethodInvoker) (() => copy = _frmMain.rbCopy.Checked));
+                _frmMain.BeginInvoke((MethodInvoker) (() => copy = _frmMain.rbCopy.Checked));
 
                 if (copy)
                     outputDir = _frmMain.OutputDirectory;
@@ -60,9 +60,13 @@ namespace BatchResize.Util
                 {
                     for (var i = startPos; i < _frmMain.OriginalFiles.Length; i++)
                     {
+                        // Increment startPos to update where loop will start if process fails.
                         startPos++;
-                        _frmMain.Invoke((MethodInvoker)(() => _frmMain.pbResize.PerformStep()));
 
+                        // Update ProgressBar
+                        _frmMain.BeginInvoke((MethodInvoker)(() => _frmMain.pbResize.PerformStep()));
+
+                        // Take original image and resize it.
                         var original = Image.FromFile(Path.Combine(_frmMain.OriginalDirectory, _frmMain.OriginalFiles[i]));
                         var newImage = ResizeImage(original);
                         original.Dispose();
@@ -99,13 +103,13 @@ namespace BatchResize.Util
                     case DialogResult.Ignore:
                         return ProcessImages(startPos);
                     default:
-                        _frmMain.Invoke((MethodInvoker) (() => _frmMain.ToggleControls(true)));
+                        _frmMain.BeginInvoke((MethodInvoker) (() => _frmMain.ToggleControls(true)));
                         return false;
                 }
             }
 
             // Turn controls back on.
-            _frmMain.Invoke((MethodInvoker) (() => _frmMain.ToggleControls(true)));
+            _frmMain.BeginInvoke((MethodInvoker) (() => _frmMain.ToggleControls(true)));
             return true;
         }
 
@@ -116,21 +120,26 @@ namespace BatchResize.Util
         /// <returns>Properly resized image.</returns>
         public Image ResizeImage(Image image)
         {
-            return image.Width > image.Height ? ResizeLandscape(image) : ResizePortrait(image);
+            var width = (int) Math.Round(_frmMain.ResizeWidth);
+            var height = (int) Math.Round(_frmMain.ResizeHeight);
+
+            return image.Width > image.Height ? ResizeLandscape(width, height, image) : ResizePortrait(width, height, image);
         }
 
         /// <summary>
         /// Resizes image with dimensions of a landscape photo.
         /// </summary>
+        /// <param name="width">Width of new image</param>
+        /// <param name="height">Height of new image</param>
         /// <param name="image">Original image to resize.</param>
         /// <returns>Properly resized image.</returns>
-        private Image ResizeLandscape(Image image)
+        private Image ResizeLandscape(int width, int height, Image image)
         {
-            var newImage = new Bitmap((int)_frmMain.ResizeWidth, (int)_frmMain.ResizeHeight);
+            var newImage = new Bitmap(width, height);
 
             using (var graphics = Graphics.FromImage(newImage))
             {
-                graphics.DrawImage(image, 0, 0, (int)_frmMain.ResizeWidth, (int)_frmMain.ResizeHeight);
+                graphics.DrawImage(image, 0, 0, width, height);
             }
 
             return newImage;
@@ -139,15 +148,17 @@ namespace BatchResize.Util
         /// <summary>
         /// Resizes image with dimensions of a portrait photo.
         /// </summary>
+        /// <param name="width">Width of new image</param>
+        /// <param name="height">Height of new image</param>
         /// <param name="image">Original image to resize.</param>
         /// <returns>Properly resized image.</returns>
-        private Image ResizePortrait(Image image)
+        private Image ResizePortrait(int width, int height, Image image)
         {
-            var newImage = new Bitmap((int)_frmMain.ResizeHeight, (int)_frmMain.ResizeWidth);
+            var newImage = new Bitmap(height, width);
 
             using (var graphics = Graphics.FromImage(newImage))
             {
-                graphics.DrawImage(image, 0, 0, (int)_frmMain.ResizeHeight, (int)_frmMain.ResizeWidth);
+                graphics.DrawImage(image, 0, 0, height, width);
             }
 
             return newImage;
