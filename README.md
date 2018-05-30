@@ -1,4 +1,6 @@
 # BatchResizer
+[![Build Status](https://matthewbeaudin.visualstudio.com/_apis/public/build/definitions/378e0c01-885a-45ec-b095-c4ba1cb45bb3/2/badge)](https://matthewbeaudin.visualstudio.com/BatchResize/_build/index?definitionId=2)
+
 A dead simple batch image resizer that's efficient and easy to use.
 
 ## Getting Started
