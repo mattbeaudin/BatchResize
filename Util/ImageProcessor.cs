@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace BatchResize.Util
 {
-    class ImageProcessor
+    public class ImageProcessor
     {
         private static MainForm _frmMain;
 
@@ -77,7 +77,7 @@ namespace BatchResize.Util
                         if (File.Exists(outputPath))
                             File.Delete(outputPath);
 
-                        newImage.Save(outputPath, ImageFormat.Jpeg);
+                        newImage.Save(outputPath, imageFormat);
 
                         newImage.Dispose();
                     }

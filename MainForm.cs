@@ -13,7 +13,7 @@ namespace BatchResize
         public string OriginalDirectory;
         public string[] OriginalFiles;
         public string OutputDirectory;
-        private ImageProcessor _imageProcessor;
+        private readonly ImageProcessor _imageProcessor;
 
         public decimal ResizeWidth = 1920;
         public decimal ResizeHeight = 1080;
