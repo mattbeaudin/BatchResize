@@ -4,16 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using BatchResize.Properties;
 using BatchResize.Util;
 
 namespace BatchResize
 {
     public partial class MainForm : Form
     {
+        private readonly ImageProcessor _imageProcessor;
+        private bool _themeSet = false;
+
         public string OriginalDirectory;
         public string[] OriginalFiles;
         public string OutputDirectory;
-        private readonly ImageProcessor _imageProcessor;
 
         public decimal ResizeWidth = 1920;
         public decimal ResizeHeight = 1080;
@@ -36,6 +39,9 @@ namespace BatchResize
 
             nudWidth.Value = ResizeWidth;
             nudHeight.Value = ResizeHeight;
+
+            LoadThemeSettings();
+            SetTheme();
         }
 
         /// <summary>
@@ -264,6 +270,56 @@ namespace BatchResize
         private void rbCopy_CheckedChanged(object sender, EventArgs e)
         {
             pnlCopyControls.Visible = rbCopy.Checked;
+        }
+
+        private void LoadThemeSettings()
+        {
+            _themeSet = Settings.Default.DarkModeOn;
+        }
+
+        /// <summary>
+        /// Toggles theme between dark and light.
+        /// </summary>
+        private void SetTheme()
+        {
+            var backColor = Color.WhiteSmoke;
+            var foreColor = Color.Black;
+
+            if ( _themeSet )
+            {
+                backColor = Settings.Default.DarkModeBackColor;
+                foreColor = Settings.Default.DarkModeForeColor;
+            }
+
+            this.BackColor = backColor;
+            this.ForeColor = foreColor;
+            gbResizeOptions.ForeColor = foreColor;
+            gbSaveOptions.ForeColor = foreColor;
+
+            btnCopyDir.ForeColor = Color.Black;
+            btnResize.ForeColor = Color.Black;
+            btnSelectDirectory.ForeColor = Color.Black;
+        }
+
+        /// <summary>
+        /// Process key presses
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns>Whether or not key press was processed correctly.</returns>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ( keyData == (Keys.Control | Keys.D) )
+            {
+                _themeSet = !_themeSet;
+                Settings.Default.DarkModeOn = _themeSet;
+                Settings.Default.Save();
+
+                SetTheme();
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

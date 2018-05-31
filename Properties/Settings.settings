@@ -1,7 +1,15 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BatchResize.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DarkModeOn" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DarkModeForeColor" Type="System.Drawing.Color" Scope="Application">
+      <Value Profile="(Default)">230, 230, 230</Value>
+    </Setting>
+    <Setting Name="DarkModeBackColor" Type="System.Drawing.Color" Scope="Application">
+      <Value Profile="(Default)">30, 30, 30</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>
