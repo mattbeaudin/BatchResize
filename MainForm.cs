@@ -309,7 +309,7 @@ namespace BatchResize
         /// <returns>Whether or not key press was processed correctly.</returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if ( keyData == (Keys.Control | Keys.D) )
+            if ( keyData == Settings.Default.DarkModeToggleKeys )
             {
                 _themeSet = !_themeSet;
                 Settings.Default.DarkModeOn = _themeSet;

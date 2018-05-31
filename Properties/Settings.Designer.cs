@@ -52,5 +52,14 @@ namespace BatchResize.Properties {
                 return ((global::System.Drawing.Color)(this["DarkModeBackColor"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Ctrl+Shift+D")]
+        public global::System.Windows.Forms.Keys DarkModeToggleKeys {
+            get {
+                return ((global::System.Windows.Forms.Keys)(this["DarkModeToggleKeys"]));
+            }
+        }
     }
 }

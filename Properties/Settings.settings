@@ -11,5 +11,8 @@
     <Setting Name="DarkModeBackColor" Type="System.Drawing.Color" Scope="Application">
       <Value Profile="(Default)">30, 30, 30</Value>
     </Setting>
+    <Setting Name="DarkModeToggleKeys" Type="System.Windows.Forms.Keys" Scope="Application">
+      <Value Profile="(Default)">Ctrl+Shift+D</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
