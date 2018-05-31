@@ -10,7 +10,6 @@ using System.Drawing.Imaging;
 using BatchResize;
 using BatchResize.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Tests.Properties;
 
 namespace Tests
 {
@@ -111,6 +110,20 @@ namespace Tests
             newImage.Dispose();
 
             Assert.IsTrue(File.Exists(outputPath));
+        }
+
+        [TestMethod]
+        public void CopyPropertiesTo()
+        {
+            var original = Image.FromFile(Path.Combine(Environment.CurrentDirectory, "..\\..\\Resources\\Test1.png"));
+            var newImage = _imageProcessor.ResizeImage(original);
+
+            _imageProcessor.CopyPropertiesTo(original, newImage);
+
+            foreach (var id in original.PropertyIdList)
+            {
+                Assert.IsTrue(newImage.GetPropertyItem(id).Id == id);
+            }
         }
     }
 }

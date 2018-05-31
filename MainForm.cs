@@ -42,7 +42,7 @@ namespace BatchResize
         /// Setup initial values for NumericUpDowns.
         /// Done by finding the first landscape photo and selecting it's size.
         /// </summary>
-        private void InitializeResizeSettings()
+        public void InitializeResizeSettings()
         {
             var imageData = Image.FromFile(Path.Combine(OriginalDirectory, OriginalFiles[0]));
 
@@ -94,34 +94,40 @@ namespace BatchResize
             {
                 if ( dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath) )
                 {
-                    var path = dialog.SelectedPath;
-
-                    // Only get the file name, not the directory.
-                    var nameIndex = path.Length;
-
-                    if ( !path.EndsWith(Path.DirectorySeparatorChar.ToString()) )
-                        nameIndex++;
-
-
-                    // TODO -> Add SearchOptions for user to select.
-                    OriginalFiles = Directory.EnumerateFiles(path, "*" + cmbFileExtension.SelectedItem,
-                                    SearchOption.TopDirectoryOnly)
-                                    .Select(file => file.Substring(nameIndex)).ToArray();
-
-                    if ( OriginalFiles.Length == 0 )
-                    {
-                        MessageBox.Show($"No files with extension '{cmbFileExtension.SelectedItem}' in directory.",
-                            "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return;
-                    }
-
-                    OriginalDirectory = path;
-                    txtPhotoDirectory.Text = OriginalDirectory;
-                    btnResize.Enabled = true;
+                    LoadFiles(dialog.SelectedPath);
                     InitializeResizeSettings();
                 }
             }
+        }
+
+        /// <summary>
+        /// Loads files into OriginalFiles after path is selected.
+        /// </summary>
+        /// <param name="path">Path of the directory to take files from.</param>
+        public void LoadFiles(string path)
+        {
+            // Only get the file name, not the directory.
+            var nameIndex = path.Length;
+
+            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                nameIndex++;
+
+            // TODO -> Add SearchOptions for user to select.
+            OriginalFiles = Directory.EnumerateFiles(path, "*" + cmbFileExtension.SelectedItem,
+                            SearchOption.TopDirectoryOnly)
+                            .Select(file => file.Substring(nameIndex)).ToArray();
+
+            if (OriginalFiles.Length == 0)
+            {
+                MessageBox.Show($"No files with extension '{cmbFileExtension.SelectedItem}' in directory.",
+                    "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            OriginalDirectory = path;
+            txtPhotoDirectory.Text = OriginalDirectory;
+            btnResize.Enabled = true;
         }
 
         /// <summary>

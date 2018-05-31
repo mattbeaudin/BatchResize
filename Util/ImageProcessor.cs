@@ -28,7 +28,7 @@ namespace BatchResize.Util
         {
             // Get ImageFormat to save new images as.
             var imageFormat = ImageFormat.Jpeg;
-            _frmMain.BeginInvoke(
+            _frmMain.Invoke(
                 (MethodInvoker)
                 (() => imageFormat = ImageExtensions.GetImageFormat((string) _frmMain.cmbFileExtension.SelectedItem)));
 
@@ -37,14 +37,14 @@ namespace BatchResize.Util
 
             // Reset progress bar if starting from beginning.
             if (startPos == 0)
-                _frmMain.BeginInvoke((MethodInvoker)(() => _frmMain.InitializeProgressBar()));
+                _frmMain.Invoke((MethodInvoker)(() => _frmMain.InitializeProgressBar()));
 
             try
             {
                 var outputDir = _frmMain.OriginalDirectory;
 
                 var copy = false;
-                _frmMain.BeginInvoke((MethodInvoker) (() => copy = _frmMain.rbCopy.Checked));
+                _frmMain.Invoke((MethodInvoker) (() => copy = _frmMain.rbCopy.Checked));
 
                 if (copy)
                     outputDir = _frmMain.OutputDirectory;
@@ -69,6 +69,9 @@ namespace BatchResize.Util
                         // Take original image and resize it.
                         var original = Image.FromFile(Path.Combine(_frmMain.OriginalDirectory, _frmMain.OriginalFiles[i]));
                         var newImage = ResizeImage(original);
+
+                        CopyPropertiesTo(original, newImage);
+
                         original.Dispose();
 
                         var outputPath = Path.Combine(outputDir, _frmMain.OriginalFiles[i]);
@@ -111,6 +114,15 @@ namespace BatchResize.Util
             // Turn controls back on.
             _frmMain.BeginInvoke((MethodInvoker) (() => _frmMain.ToggleControls(true)));
             return true;
+        }
+
+        public void CopyPropertiesTo(Image original, Image newImage)
+        {
+            // Copy properties from original file into new file
+            foreach (var property in original.PropertyItems)
+            {
+                newImage.SetPropertyItem(property);
+            }
         }
 
         /// <summary>
