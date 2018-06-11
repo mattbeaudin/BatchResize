@@ -15,16 +15,9 @@ If you plan on making changes that involve adding dependencies then you're going
 1. Build Solution as **Release.**
 2. Open up the command prompt inside of the /Installer directory and run the following commands:
 
-### With Environment Variables:
 ```
 > candle BatchResizeInstaller.wxs
 > light -ext WixUIExtension BatchResizeInstaller.wixobj
-```
-
-### Without Environment Variables:
-```
-> "C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe" BatchResizeInstaller.wxs
-> "C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe" -ext WixUIExtension BatchResizeInstaller.wixobj
 ```
 
 ### Note:
