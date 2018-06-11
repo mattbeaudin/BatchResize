@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BatchResize;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,7 +21,7 @@ namespace Tests
             _frmMain.cmbFileExtension.SelectedIndex = _frmMain.cmbFileExtension.Items.IndexOf(".png");
             _frmMain.LoadFiles(Path.Combine(Environment.CurrentDirectory, "..\\..\\Resources"));
 
-            Assert.IsTrue(_frmMain.OriginalFiles.Length == 2);
+            Assert.IsTrue(_frmMain.ImageProcessor.ImageCount() == 2);
         }
 
         [TestMethod]
@@ -37,16 +33,16 @@ namespace Tests
             const int actualWidth = 1280;
             const int actualHeight = 720;
 
-            Assert.AreEqual(initialWidth, _frmMain.ResizeWidth);
-            Assert.AreEqual(initialHeight, _frmMain.ResizeHeight);
+            Assert.AreEqual(initialWidth, _frmMain.ImageProcessor.ResizeWidth);
+            Assert.AreEqual(initialHeight, _frmMain.ImageProcessor.ResizeHeight);
 
             _frmMain.cmbFileExtension.SelectedIndex = _frmMain.cmbFileExtension.Items.IndexOf(".png");
             _frmMain.LoadFiles(Path.Combine(Environment.CurrentDirectory, "..\\..\\Resources"));
 
             _frmMain.InitializeResizeSettings();
 
-            Assert.AreEqual(actualWidth, _frmMain.ResizeWidth);
-            Assert.AreEqual(actualHeight, _frmMain.ResizeHeight);
+            Assert.AreEqual(actualWidth, _frmMain.ImageProcessor.ResizeWidth);
+            Assert.AreEqual(actualHeight, _frmMain.ImageProcessor.ResizeHeight);
         }
 
         [TestMethod]
@@ -64,7 +60,7 @@ namespace Tests
 
             _frmMain.nudWidth.Value = width1;
 
-            Assert.AreEqual(height1, Math.Round(_frmMain.ResizeHeight));
+            Assert.AreEqual(height1, Math.Round(_frmMain.ImageProcessor.ResizeHeight));
 
             const int initialWidth2 = 1600;
             const int initialHeight2 = 1200;
@@ -80,7 +76,7 @@ namespace Tests
 
             _frmMain.nudWidth.Value = width2;
 
-            Assert.AreEqual(height2, Math.Round(_frmMain.ResizeHeight));
+            Assert.AreEqual(height2, Math.Round(_frmMain.ImageProcessor.ResizeHeight));
         }
 
         [TestMethod]
@@ -98,7 +94,7 @@ namespace Tests
 
             _frmMain.nudHeight.Value = height1;
 
-            Assert.AreEqual(width1, Math.Round(_frmMain.ResizeWidth));
+            Assert.AreEqual(width1, Math.Round(_frmMain.ImageProcessor.ResizeWidth));
 
             const int initialWidth2 = 1600;
             const int initialHeight2 = 1200;
@@ -114,7 +110,7 @@ namespace Tests
 
             _frmMain.nudHeight.Value = height2;
 
-            Assert.AreEqual(width2, Math.Round(_frmMain.ResizeWidth));
+            Assert.AreEqual(width2, Math.Round(_frmMain.ImageProcessor.ResizeWidth));
         }
     }
 }

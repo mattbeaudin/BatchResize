@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Imaging;
-using BatchResize;
 using BatchResize.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,13 +10,25 @@ namespace Tests
     [TestClass]
     public class ImageProcessorTests
     {
-        private readonly MainForm _frmMain;
         private readonly ImageProcessor _imageProcessor;
 
         public ImageProcessorTests()
         {
-            _frmMain = new MainForm();
-            _imageProcessor = new ImageProcessor(_frmMain);
+            _imageProcessor = new ImageProcessor();
+        }
+
+        [TestMethod]
+        public void GetFirstLandscapeImage()
+        {
+            const int expectedWidth = 1280;
+            const int expectedHeight = 720;
+
+            _imageProcessor.LoadFiles(Path.Combine(Environment.CurrentDirectory, "..\\..\\Resources"), ".png");
+            var first = _imageProcessor.GetFirstLandscape();
+
+            Assert.AreEqual(expectedWidth, first.Width);
+            Assert.AreEqual(expectedHeight, first.Height);
+            first.Dispose();
         }
 
         [TestMethod]
@@ -31,8 +37,8 @@ namespace Tests
             const int newWidth = 1920;
             const int newHeight = 1080;
 
-            _frmMain.ResizeWidth = newWidth;
-            _frmMain.ResizeHeight = newHeight;
+            _imageProcessor.ResizeWidth = newWidth;
+            _imageProcessor.ResizeHeight = newHeight;
 
             var original = Image.FromFile(Path.Combine(Environment.CurrentDirectory, "..\\..\\Resources\\Test1.png"));
             var newImage = _imageProcessor.ResizeImage(original);
@@ -49,8 +55,8 @@ namespace Tests
             const int newWidth = 1920;
             const int newHeight = 1080;
 
-            _frmMain.ResizeWidth = newWidth;
-            _frmMain.ResizeHeight = newHeight;
+            _imageProcessor.ResizeWidth = newWidth;
+            _imageProcessor.ResizeHeight = newHeight;
 
             var original = Image.FromFile(Path.Combine(Environment.CurrentDirectory, "..\\..\\Resources\\Test2.png"));
             var newImage = _imageProcessor.ResizeImage(original);
@@ -68,8 +74,8 @@ namespace Tests
             const int newWidth = 1280;
             const int newHeight = 720;
 
-            _frmMain.ResizeWidth = newWidth;
-            _frmMain.ResizeHeight = newHeight;
+            _imageProcessor.ResizeWidth = newWidth;
+            _imageProcessor.ResizeHeight = newHeight;
 
             var outputPath = Path.Combine(Environment.CurrentDirectory, "..\\..\\Resources\\Test1.png");
 
@@ -93,8 +99,8 @@ namespace Tests
             const int newWidth = 1280;
             const int newHeight = 720;
 
-            _frmMain.ResizeWidth = newWidth;
-            _frmMain.ResizeHeight = newHeight;
+            _imageProcessor.ResizeWidth = newWidth;
+            _imageProcessor.ResizeHeight = newHeight;
 
             var original = Image.FromFile(Path.Combine(Environment.CurrentDirectory, "..\\..\\Resources\\Test2.png"));
             var newImage = _imageProcessor.ResizeImage(original);

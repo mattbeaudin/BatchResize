@@ -1,8 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using BatchResize.Properties;
 using BatchResize.Util;
@@ -11,15 +10,8 @@ namespace BatchResize
 {
     public partial class MainForm : Form
     {
-        private readonly ImageProcessor _imageProcessor;
+        public readonly ImageProcessor ImageProcessor;
         private bool _themeSet = false;
-
-        public string OriginalDirectory;
-        public string[] OriginalFiles;
-        public string OutputDirectory;
-
-        public decimal ResizeWidth = 1920;
-        public decimal ResizeHeight = 1080;
 
         /// <summary>
         /// Form constructor. Sets up default form selections for easier use.
@@ -28,7 +20,7 @@ namespace BatchResize
         {
             InitializeComponent();
 
-            _imageProcessor = new ImageProcessor(this);
+            ImageProcessor = new ImageProcessor();
 
             // Load ImageExtensions into cmbFileExtensions and select the most common extension.
             foreach (var format in ImageExtensions.AvailableFormats)
@@ -37,8 +29,8 @@ namespace BatchResize
             cmbFileExtension.SelectedIndex = 2;
             btnSelectDirectory.Select();
 
-            nudWidth.Value = ResizeWidth;
-            nudHeight.Value = ResizeHeight;
+            nudWidth.Value = ImageProcessor.ResizeWidth;
+            nudHeight.Value = ImageProcessor.ResizeHeight;
 
             LoadThemeSettings();
             SetTheme();
@@ -50,24 +42,14 @@ namespace BatchResize
         /// </summary>
         public void InitializeResizeSettings()
         {
-            var imageData = Image.FromFile(Path.Combine(OriginalDirectory, OriginalFiles[0]));
-
-            for (var i = 1; i < OriginalFiles.Length; i++)
-            {
-                if ( imageData.Width > imageData.Height )
-                    break;
-
-                // Make sure to dispose so file is let go.
-                imageData.Dispose();
-                imageData = Image.FromFile(Path.Combine(OriginalDirectory, OriginalFiles[i]));
-            }
+            var imageData = ImageProcessor.GetFirstLandscape();
 
             // Set private vars as well as controls.
-            ResizeWidth = imageData.Width;
-            ResizeHeight = imageData.Height;
+            ImageProcessor.ResizeWidth = imageData.Width;
+            ImageProcessor.ResizeHeight = imageData.Height;
 
-            nudWidth.Value = ResizeWidth;
-            nudHeight.Value = ResizeHeight;
+            nudWidth.Value = ImageProcessor.ResizeWidth;
+            nudHeight.Value = ImageProcessor.ResizeHeight;
             imageData.Dispose();
         }
 
@@ -77,7 +59,7 @@ namespace BatchResize
         public void InitializeProgressBar()
         {
             pbResize.Value = 0;
-            pbResize.Maximum = OriginalFiles.Length;
+            pbResize.Maximum = ImageProcessor.OriginalFiles.Length;
             pbResize.Step = 1;
         }
 
@@ -112,27 +94,8 @@ namespace BatchResize
         /// <param name="path">Path of the directory to take files from.</param>
         public void LoadFiles(string path)
         {
-            // Only get the file name, not the directory.
-            var nameIndex = path.Length;
-
-            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                nameIndex++;
-
-            // TODO -> Add SearchOptions for user to select.
-            OriginalFiles = Directory.EnumerateFiles(path, "*" + cmbFileExtension.SelectedItem,
-                            SearchOption.TopDirectoryOnly)
-                            .Select(file => file.Substring(nameIndex)).ToArray();
-
-            if (OriginalFiles.Length == 0)
-            {
-                MessageBox.Show($"No files with extension '{cmbFileExtension.SelectedItem}' in directory.",
-                    "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
-            OriginalDirectory = path;
-            txtPhotoDirectory.Text = OriginalDirectory;
+            ImageProcessor.LoadFiles(path, (string) cmbFileExtension.SelectedItem);
+            txtPhotoDirectory.Text = ImageProcessor.OriginalDirectory;
             btnResize.Enabled = true;
         }
 
@@ -167,8 +130,8 @@ namespace BatchResize
                         }
                     }
 
-                    OutputDirectory = dialog.SelectedPath;
-                    txtOutputDirectory.Text = OutputDirectory;
+                    ImageProcessor.OutputDirectory = dialog.SelectedPath;
+                    txtOutputDirectory.Text = ImageProcessor.OutputDirectory;
                 }
             }
         }
@@ -179,15 +142,11 @@ namespace BatchResize
         /// <param name="state">Whether or not controls will be enabled.</param>
         public void ToggleControls(bool state)
         {
+            gbResizeOptions.Enabled = state;
+            gbSaveOptions.Enabled = state;
+
             btnSelectDirectory.Enabled = state;
             cmbFileExtension.Enabled = state;
-            rbOverwrite.Enabled = state;
-            rbCopy.Enabled = state;
-            chkMaintainAspectRatio.Enabled = state;
-            btnResize.Enabled = state;
-            nudWidth.Enabled = state;
-            nudHeight.Enabled = state;
-            btnCopyDir.Enabled = state;
         }
 
         /// <summary>
@@ -197,30 +156,63 @@ namespace BatchResize
         /// <param name="e"></param>
         private void btnResize_Click(object sender, EventArgs e)
         {
-            // Run ProcessImages and grab result.
-            var result = false;
+            ProcessImages();
+        }
 
-            var thread = new Thread(() =>
+        /// <summary>
+        /// Goes through each file in directory and updates them with a resized version of the original.
+        /// </summary>
+        public void ProcessImages()
+        {
+            var imageFormat = ImageExtensions.GetImageFormat((string)cmbFileExtension.SelectedItem);
+
+            ToggleControls(false);
+
+            InitializeProgressBar();
+
+            var outputDir = ImageProcessor.OriginalDirectory;
+
+            if (rbCopy.Checked)
             {
-                result = _imageProcessor.ProcessImages();
+                outputDir = ImageProcessor.OutputDirectory;
+            }
 
-                if (result)
+            if ( string.IsNullOrWhiteSpace(outputDir) || !Directory.Exists(outputDir) )
+            {
+                MessageBox.Show("No output directory was selected. Please select one before resizing images", "Something went wrong.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if ( Directory.Exists(ImageProcessor.OriginalDirectory) )
+            {
+                var worker = new BackgroundWorker();
+
+                // Setup worker task.
+                worker.DoWork += (sender, args) =>
                 {
-                    if (rbCopy.Checked)
-                        MessageBox.Show($"New resized photos have been saved to {OutputDirectory}", "Success",
-                       MessageBoxButtons.OK,
-                       MessageBoxIcon.Information);
-                    else
-                        MessageBox.Show($"New resized photos have been saved to {OriginalDirectory}", "Success",
-                       MessageBoxButtons.OK,
-                       MessageBoxIcon.Information);
-                }
-                else
-                    MessageBox.Show("Files were not changed as process was aborted.", "Something went wrong.",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-            });
+                    for (var i = 0; i < ImageProcessor.ImageCount(); i++)
+                    {
+                        ImageProcessor.ProcessImage(i, outputDir, imageFormat);
+                        this.Invoke((MethodInvoker)(() => pbResize.PerformStep()));
+                    }
+                };
 
-            thread.Start();
+                // Setup function that runs when worker finishes.
+                worker.RunWorkerCompleted += (sender, args) =>
+                {
+                    MessageBox.Show(
+                        rbCopy.Checked
+                            ? $"New resized photos have been saved to {ImageProcessor.OutputDirectory}"
+                            : $"New resized photos have been saved to {ImageProcessor.OriginalDirectory}", "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    ToggleControls(true);
+                };
+
+                worker.RunWorkerAsync();
+            }
         }
 
         /// <summary>
@@ -232,10 +224,10 @@ namespace BatchResize
         {
             // Update height using aspect ratio if checked.
             if ( chkMaintainAspectRatio.Checked )
-                nudHeight.Value = nudWidth.Value / GetAspectRatio();
+                nudHeight.Value = nudWidth.Value / ImageProcessor.GetAspectRatio();
 
             // Update private width variable.
-            ResizeWidth = nudWidth.Value;
+            ImageProcessor.ResizeWidth = nudWidth.Value;
         }
 
         /// <summary>
@@ -247,19 +239,10 @@ namespace BatchResize
         {
             // Update width using aspect ratio if checked.
             if ( chkMaintainAspectRatio.Checked )
-                nudWidth.Value = nudHeight.Value * GetAspectRatio();
+                nudWidth.Value = nudHeight.Value * ImageProcessor.GetAspectRatio();
 
             // Update private height variable.
-            ResizeHeight = nudHeight.Value;
-        }
-
-        /// <summary>
-        /// Gets aspect ratio to find new height/width.
-        /// </summary>
-        /// <returns>Aspect ratio</returns>
-        private decimal GetAspectRatio()
-        {
-            return ResizeWidth / ResizeHeight;
+            ImageProcessor.ResizeHeight = nudHeight.Value;
         }
 
         /// <summary>
@@ -301,6 +284,7 @@ namespace BatchResize
             btnSelectDirectory.ForeColor = Color.Black;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Process key presses
         /// </summary>

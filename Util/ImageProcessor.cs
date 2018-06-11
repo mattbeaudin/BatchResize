@@ -3,117 +3,123 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace BatchResize.Util
 {
     public class ImageProcessor
     {
-        private static MainForm _frmMain;
+        public string OriginalDirectory;
+        public string[] OriginalFiles;
+        public string OutputDirectory;
+
+        public decimal ResizeWidth;
+        public decimal ResizeHeight;
 
         /// <summary>
         /// ImageProcessor constructor.
         /// </summary>
-        /// <param name="frmMain">Reference to MainForm to use for UI updates.</param>
-        public ImageProcessor(MainForm frmMain)
+        public ImageProcessor()
         {
-            _frmMain = frmMain;
+            ResizeWidth = 1920;
+            ResizeHeight = 1080;
         }
 
         /// <summary>
-        /// Goes through each file in directory and updates them with a resized version of the original.
+        /// Gets first landscape image in OriginalFiles. If none are found, grab last portrait image.
         /// </summary>
-        /// <param name="startPos">What folder in the directory to start resizing from. Useful for Retry and skipping a file that can't be loaded.</param>
-        /// <returns>Whether or not the processing succeeded.</returns>
-        public bool ProcessImages(int startPos = 0)
+        /// <returns>First landscape image or last portrait image.</returns>
+        public Image GetFirstLandscape()
         {
-            // Get ImageFormat to save new images as.
-            var imageFormat = ImageFormat.Jpeg;
-            _frmMain.Invoke(
-                (MethodInvoker)
-                (() => imageFormat = ImageExtensions.GetImageFormat((string) _frmMain.cmbFileExtension.SelectedItem)));
+            var imageData = Image.FromFile(Path.Combine(OriginalDirectory, OriginalFiles[0]));
 
-            // Disable controls so user can't harm the process.
-            _frmMain.BeginInvoke((MethodInvoker)(() => _frmMain.ToggleControls(false)));
+            for (var i = 1; i < ImageCount(); i++)
+            {
+                if (imageData.Width > imageData.Height)
+                    break;
 
-            // Reset progress bar if starting from beginning.
-            if (startPos == 0)
-                _frmMain.Invoke((MethodInvoker)(() => _frmMain.InitializeProgressBar()));
+                imageData.Dispose();
+                imageData = Image.FromFile(Path.Combine(OriginalDirectory, OriginalFiles[i]));
+            }
 
+            return imageData;
+        }
+
+        /// <summary>
+        /// Loads files into OriginalFiles after path is selected.
+        /// </summary>
+        /// <param name="path">Path of the directory to take files from.</param>
+        /// <param name="ext">File extension to grab files with.</param>
+        public void LoadFiles(string path, string ext)
+        {
+            // Only get the file name, not the directory.
+            var nameIndex = path.Length;
+
+            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                nameIndex++;
+
+            // TODO -> Add SearchOptions for user to select.
+            OriginalFiles = Directory.EnumerateFiles(path, "*" + ext,
+                    SearchOption.TopDirectoryOnly)
+                .Select(file => file.Substring(nameIndex)).ToArray();
+
+            if (OriginalFiles.Length == 0)
+            {
+                MessageBox.Show($"No files with extension '{ext}' in directory.",
+                    "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            OriginalDirectory = path;
+        }
+
+        /// <summary>
+        /// Gets the number of images that have been loaded in.
+        /// </summary>
+        /// <returns>Number of loaded images.</returns>
+        public int ImageCount()
+        {
+            return OriginalFiles.Length;
+        }
+
+        /// <summary>
+        /// Runs resize process on given image.
+        /// </summary>
+        /// <param name="index">Index of image to resize.</param>
+        /// <param name="outputDir">Directory to output image to.</param>
+        /// <param name="imageFormat">Image format of new image.</param>
+        /// <returns>If process succeeded or not.</returns>
+        public bool ProcessImage(int index, string outputDir, ImageFormat imageFormat)
+        {
             try
             {
-                var outputDir = _frmMain.OriginalDirectory;
+                var original = Image.FromFile(Path.Combine(OriginalDirectory, OriginalFiles[index]));
+                var newImage = ResizeImage(original);
 
-                var copy = false;
-                _frmMain.Invoke((MethodInvoker) (() => copy = _frmMain.rbCopy.Checked));
+                CopyPropertiesTo(original, newImage);
 
-                if (copy)
-                    outputDir = _frmMain.OutputDirectory;
+                original.Dispose();
 
-                if (string.IsNullOrWhiteSpace(outputDir) || !Directory.Exists(outputDir))
+                var outputPath = Path.Combine(outputDir, OriginalFiles[index]);
+
+                // Delete before saving new (update)
+                if ( File.Exists(outputPath) )
                 {
-                    MessageBox.Show("No output directory was selected. Please select one before resizing images", "Something went wrong.",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
+                    File.Delete(outputPath);
                 }
 
-                if (Directory.Exists(_frmMain.OriginalDirectory))
-                {
-                    for (var i = startPos; i < _frmMain.OriginalFiles.Length; i++)
-                    {
-                        // Increment startPos to update where loop will start if process fails.
-                        startPos++;
+                newImage.Save(outputPath, imageFormat);
 
-                        // Update ProgressBar
-                        _frmMain.BeginInvoke((MethodInvoker)(() => _frmMain.pbResize.PerformStep()));
-
-                        // Take original image and resize it.
-                        var original = Image.FromFile(Path.Combine(_frmMain.OriginalDirectory, _frmMain.OriginalFiles[i]));
-                        var newImage = ResizeImage(original);
-
-                        CopyPropertiesTo(original, newImage);
-
-                        original.Dispose();
-
-                        var outputPath = Path.Combine(outputDir, _frmMain.OriginalFiles[i]);
-
-                        // Delete before saving new (update)
-                        if (File.Exists(outputPath))
-                            File.Delete(outputPath);
-
-                        newImage.Save(outputPath, imageFormat);
-
-                        newImage.Dispose();
-                    }
-                }
-                else
-                {
-                    return false;
-                }
+                newImage.Dispose();
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
-                // Capture exception if current file is in use by another process.
-                DialogResult result = MessageBox.Show($"File is being used by another process. {ex.Message}", "File in use Exception",
-                    MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
-
-                // If user wants to retry, run ProcessImages from beginning.
-                // If user wants to ignore, run ProcessImages from next file to skip current one.
-                // TODO -> Find a better way to recursively call ProcessImages().
-                switch (result)
-                {
-                    case DialogResult.Retry:
-                        return ProcessImages();
-                    case DialogResult.Ignore:
-                        return ProcessImages(startPos);
-                    default:
-                        _frmMain.BeginInvoke((MethodInvoker) (() => _frmMain.ToggleControls(true)));
-                        return false;
-                }
+                Console.WriteLine(ex.Message);
+                return false;
             }
 
-            // Turn controls back on.
-            _frmMain.BeginInvoke((MethodInvoker) (() => _frmMain.ToggleControls(true)));
             return true;
         }
 
@@ -133,8 +139,8 @@ namespace BatchResize.Util
         /// <returns>Properly resized image.</returns>
         public Image ResizeImage(Image image)
         {
-            var width = (int) Math.Round(_frmMain.ResizeWidth);
-            var height = (int) Math.Round(_frmMain.ResizeHeight);
+            var width = (int) Math.Round(ResizeWidth);
+            var height = (int) Math.Round(ResizeHeight);
 
             return image.Width > image.Height ? DoResize(width, height, image) : DoResize(height, width, image);
         }
@@ -160,10 +166,18 @@ namespace BatchResize.Util
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
 
                 graphics.DrawImage(image, 0, 0, width, height);
-                graphics.Dispose();
             }
 
             return newImage;
+        }
+
+        /// <summary>
+        /// Gets aspect ratio to find new height/width.
+        /// </summary>
+        /// <returns>Aspect ratio</returns>
+        public decimal GetAspectRatio()
+        {
+            return ResizeWidth / ResizeHeight;
         }
     }
 }
