@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
@@ -135,42 +136,31 @@ namespace BatchResize.Util
             var width = (int) Math.Round(_frmMain.ResizeWidth);
             var height = (int) Math.Round(_frmMain.ResizeHeight);
 
-            return image.Width > image.Height ? ResizeLandscape(width, height, image) : ResizePortrait(width, height, image);
+            return image.Width > image.Height ? DoResize(width, height, image) : DoResize(height, width, image);
         }
 
         /// <summary>
-        /// Resizes image with dimensions of a landscape photo.
+        /// Resizes image with new dimensions width and height.
+        /// To resize a landscape photo, send parameters normally.
+        /// To resize a portrait photo, send resize height as param width and resize width as param height.
         /// </summary>
         /// <param name="width">Width of new image</param>
         /// <param name="height">Height of new image</param>
         /// <param name="image">Original image to resize.</param>
         /// <returns>Properly resized image.</returns>
-        private Image ResizeLandscape(int width, int height, Image image)
+        private Image DoResize(int width, int height, Image image)
         {
             var newImage = new Bitmap(width, height);
 
             using (var graphics = Graphics.FromImage(newImage))
             {
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+
                 graphics.DrawImage(image, 0, 0, width, height);
-            }
-
-            return newImage;
-        }
-
-        /// <summary>
-        /// Resizes image with dimensions of a portrait photo.
-        /// </summary>
-        /// <param name="width">Width of new image</param>
-        /// <param name="height">Height of new image</param>
-        /// <param name="image">Original image to resize.</param>
-        /// <returns>Properly resized image.</returns>
-        private Image ResizePortrait(int width, int height, Image image)
-        {
-            var newImage = new Bitmap(height, width);
-
-            using (var graphics = Graphics.FromImage(newImage))
-            {
-                graphics.DrawImage(image, 0, 0, height, width);
+                graphics.Dispose();
             }
 
             return newImage;
