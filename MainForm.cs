@@ -24,9 +24,14 @@ namespace BatchResize
 
             // Load ImageExtensions into cmbFileExtensions and select the most common extension.
             foreach (var format in ImageExtensions.AvailableFormats)
+            {
                 cmbFileExtension.Items.Add(format);
+            }
 
+            // Select most common use case (jpg)
             cmbFileExtension.SelectedIndex = 2;
+
+            // Focus on button instead of textbox
             btnSelectDirectory.Select();
 
             nudWidth.Value = ImageProcessor.ResizeWidth;
