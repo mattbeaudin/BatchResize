@@ -51,7 +51,7 @@ namespace BatchResize.Util
         /// </summary>
         /// <param name="path">Path of the directory to take files from.</param>
         /// <param name="ext">File extension to grab files with.</param>
-        public void LoadFiles(string path, string ext)
+        public bool LoadFiles(string path, string ext)
         {
             // Only get the file name, not the directory.
             var nameIndex = path.Length;
@@ -69,10 +69,11 @@ namespace BatchResize.Util
                 MessageBox.Show($"No files with extension '{ext}' in directory.",
                     "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return;
+                return false;
             }
 
             OriginalDirectory = path;
+            return true;
         }
 
         /// <summary>

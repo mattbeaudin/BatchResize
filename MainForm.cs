@@ -87,8 +87,10 @@ namespace BatchResize
             {
                 if ( dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath) )
                 {
-                    LoadFiles(dialog.SelectedPath);
-                    InitializeResizeSettings();
+                    if (LoadFiles(dialog.SelectedPath))
+                    {
+                        InitializeResizeSettings();
+                    }
                 }
             }
         }
@@ -97,11 +99,17 @@ namespace BatchResize
         /// Loads files into OriginalFiles after path is selected.
         /// </summary>
         /// <param name="path">Path of the directory to take files from.</param>
-        public void LoadFiles(string path)
+        public bool LoadFiles(string path)
         {
-            ImageProcessor.LoadFiles(path, (string) cmbFileExtension.SelectedItem);
-            txtPhotoDirectory.Text = ImageProcessor.OriginalDirectory;
-            btnResize.Enabled = true;
+            var result = ImageProcessor.LoadFiles(path, (string) cmbFileExtension.SelectedItem);
+
+            if (result)
+            {
+                txtPhotoDirectory.Text = ImageProcessor.OriginalDirectory;
+                btnResize.Enabled = true;
+            }
+
+            return result;
         }
 
         /// <summary>
