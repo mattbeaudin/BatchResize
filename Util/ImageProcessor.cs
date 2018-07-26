@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
+using BatchResize.Properties;
 
 namespace BatchResize.Util
 {
@@ -66,9 +67,7 @@ namespace BatchResize.Util
 
             if (OriginalFiles.Length == 0)
             {
-                MessageBox.Show($"No files with extension '{ext}' in directory.",
-                    "File Type Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                MessageBox.Show(string.Format(Resources.ErrorNoFilesWithExtension, ext), Resources.ErrorNoFilesWithExtensionTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -126,7 +125,6 @@ namespace BatchResize.Util
 
         public void CopyPropertiesTo(Image original, Image newImage)
         {
-            // Copy properties from original file into new file
             foreach (var property in original.PropertyItems)
             {
                 newImage.SetPropertyItem(property);
@@ -165,7 +163,6 @@ namespace BatchResize.Util
                 graphics.SmoothingMode = SmoothingMode.HighQuality;
                 graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
-
                 graphics.DrawImage(image, 0, 0, width, height);
             }
 

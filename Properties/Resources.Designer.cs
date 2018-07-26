@@ -19,7 +19,7 @@ namespace BatchResize.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -61,12 +61,74 @@ namespace BatchResize.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized string similar to Something went wrong..
         /// </summary>
-        internal static System.Drawing.Icon Icon {
+        internal static string ErrorGenericTitle {
             get {
-                object obj = ResourceManager.GetObject("Icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ResourceManager.GetString("ErrorGenericTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No files with extension &apos;{0}&apos; in directory..
+        /// </summary>
+        internal static string ErrorNoFilesWithExtension {
+            get {
+                return ResourceManager.GetString("ErrorNoFilesWithExtension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Type Exception.
+        /// </summary>
+        internal static string ErrorNoFilesWithExtensionTitle {
+            get {
+                return ResourceManager.GetString("ErrorNoFilesWithExtensionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No output directory was selected. Please select one before resizing images..
+        /// </summary>
+        internal static string ErrorNoOutputSelected {
+            get {
+                return ResourceManager.GetString("ErrorNoOutputSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New resized photos have been saved to &apos;{0}&apos;..
+        /// </summary>
+        internal static string InfoImagesSavedTo {
+            get {
+                return ResourceManager.GetString("InfoImagesSavedTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are files in this directory that may be overwritten. Would you like to continue?.
+        /// </summary>
+        internal static string OverwriteFilesWarning {
+            get {
+                return ResourceManager.GetString("OverwriteFilesWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files could possibly be overwritten..
+        /// </summary>
+        internal static string OverwriteFilesWarningTitle {
+            get {
+                return ResourceManager.GetString("OverwriteFilesWarningTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success.
+        /// </summary>
+        internal static string SuccessGenericTitle {
+            get {
+                return ResourceManager.GetString("SuccessGenericTitle", resourceCulture);
             }
         }
     }

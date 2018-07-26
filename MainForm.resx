@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="lblGuide.Text" xml:space="preserve">
+  <data name="GuideText" xml:space="preserve">
     <value>To make sure all images are sized correctly, make sure that all images have the same width/height. If there are images that are both landscape and portrait, make sure that they have identical dimensions.
 Ex: Landscape -&gt; (3000x2000).  Portrait -&gt; (2000x3000).</value>
   </data>
@@ -3163,5 +3163,38 @@ Ex: Landscape -&gt; (3000x2000).  Portrait -&gt; (2000x3000).</value>
         AAAA8A8AAMADAACAAQAAgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAEAAIABAADA
         AwAA4AcAAA==
 </value>
+  </data>
+  <data name="MaintainAspectRatioText" xml:space="preserve">
+    <value>Maintain Aspect Ratio</value>
+  </data>
+  <data name="NewHeightLabel" xml:space="preserve">
+    <value>New Height</value>
+  </data>
+  <data name="NewWidthLabel" xml:space="preserve">
+    <value>New Width</value>
+  </data>
+  <data name="ResizeImagesText" xml:space="preserve">
+    <value>Resize Images</value>
+  </data>
+  <data name="ResizeOptionsText" xml:space="preserve">
+    <value>Resize Options</value>
+  </data>
+  <data name="SaveOptionCopyText" xml:space="preserve">
+    <value>Copy to new folder</value>
+  </data>
+  <data name="SaveOptionsText" xml:space="preserve">
+    <value>Save Options</value>
+  </data>
+  <data name="SelectDirectoryLabelText" xml:space="preserve">
+    <value>Photo Directory</value>
+  </data>
+  <data name="SelectDirectoryText" xml:space="preserve">
+    <value>Select Folder</value>
+  </data>
+  <data name="SelectOutputFolderLabelText" xml:space="preserve">
+    <value>Copy to Directory</value>
+  </data>
+  <data name="SelectOutputFolderText" xml:space="preserve">
+    <value>Select Output Folder</value>
   </data>
 </root>

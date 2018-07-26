@@ -11,7 +11,7 @@ namespace BatchResize
     public partial class MainForm : Form
     {
         public readonly ImageProcessor ImageProcessor;
-        private bool _themeSet = false;
+        private bool _themeSet;
 
         /// <summary>
         /// Form constructor. Sets up default form selections for easier use.
@@ -85,12 +85,11 @@ namespace BatchResize
         {
             using (var dialog = new FolderBrowserDialog())
             {
-                if ( dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath) )
+                if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.SelectedPath)) return;
+
+                if (LoadFiles(dialog.SelectedPath))
                 {
-                    if (LoadFiles(dialog.SelectedPath))
-                    {
-                        InitializeResizeSettings();
-                    }
+                    InitializeResizeSettings();
                 }
             }
         }
@@ -101,15 +100,11 @@ namespace BatchResize
         /// <param name="path">Path of the directory to take files from.</param>
         public bool LoadFiles(string path)
         {
-            var result = ImageProcessor.LoadFiles(path, (string) cmbFileExtension.SelectedItem);
+            if (!ImageProcessor.LoadFiles(path, (string)cmbFileExtension.SelectedItem)) return false;
 
-            if (result)
-            {
-                txtPhotoDirectory.Text = ImageProcessor.OriginalDirectory;
-                btnResize.Enabled = true;
-            }
-
-            return result;
+            txtPhotoDirectory.Text = ImageProcessor.OriginalDirectory;
+            btnResize.Enabled = true;
+            return true;
         }
 
         /// <summary>
@@ -129,23 +124,22 @@ namespace BatchResize
         {
             using (var dialog = new FolderBrowserDialog())
             {
-                if (dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
-                {
-                    // If there are files in the directory and user doesn't want to continue, don't set output directory.
-                    if (Directory.GetFiles(dialog.SelectedPath).Length > 0)
-                    {
-                        if (MessageBox.Show(
-                                 "There are files in this directory that may be overwritten. Would you like to continue?",
-                                 "Files could possibly be overwritten.",
-                                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        {
-                            return;
-                        }
-                    }
+                if (dialog.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(dialog.SelectedPath)) return;
 
-                    ImageProcessor.OutputDirectory = dialog.SelectedPath;
-                    txtOutputDirectory.Text = ImageProcessor.OutputDirectory;
+                // If there are files in the directory and user doesn't want to continue, don't set output directory.
+                if (Directory.GetFiles(dialog.SelectedPath).Length > 0)
+                {
+                    if (MessageBox.Show(
+                            Resources.OverwriteFilesWarning,
+                            Resources.OverwriteFilesWarningTitle,
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    {
+                        return;
+                    }
                 }
+
+                ImageProcessor.OutputDirectory = dialog.SelectedPath;
+                txtOutputDirectory.Text = ImageProcessor.OutputDirectory;
             }
         }
 
@@ -192,40 +186,39 @@ namespace BatchResize
 
             if ( string.IsNullOrWhiteSpace(outputDir) || !Directory.Exists(outputDir) )
             {
-                MessageBox.Show("No output directory was selected. Please select one before resizing images", "Something went wrong.",
+                MessageBox.Show(Resources.ErrorNoOutputSelected, Resources.ErrorGenericTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if ( Directory.Exists(ImageProcessor.OriginalDirectory) )
+            if (!Directory.Exists(ImageProcessor.OriginalDirectory)) return;
+
+            var worker = new BackgroundWorker();
+
+            // Setup worker task.
+            worker.DoWork += (sender, args) =>
             {
-                var worker = new BackgroundWorker();
-
-                // Setup worker task.
-                worker.DoWork += (sender, args) =>
+                for (var i = 0; i < ImageProcessor.ImageCount(); i++)
                 {
-                    for (var i = 0; i < ImageProcessor.ImageCount(); i++)
-                    {
-                        ImageProcessor.ProcessImage(i, outputDir, imageFormat);
-                        this.Invoke((MethodInvoker)(() => pbResize.PerformStep()));
-                    }
-                };
+                    ImageProcessor.ProcessImage(i, outputDir, imageFormat);
+                    Invoke((MethodInvoker)(() => pbResize.PerformStep()));
+                }
+            };
 
-                // Setup function that runs when worker finishes.
-                worker.RunWorkerCompleted += (sender, args) =>
-                {
-                    MessageBox.Show(
-                        rbCopy.Checked
-                            ? $"New resized photos have been saved to {ImageProcessor.OutputDirectory}"
-                            : $"New resized photos have been saved to {ImageProcessor.OriginalDirectory}", "Success",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+            // Setup function that runs when worker finishes.
+            worker.RunWorkerCompleted += (sender, args) =>
+            {
+                MessageBox.Show(
+                    rbCopy.Checked
+                        ? string.Format(Resources.InfoImagesSavedTo, ImageProcessor.OutputDirectory)
+                        : string.Format(Resources.InfoImagesSavedTo, ImageProcessor.OriginalDirectory), Resources.SuccessGenericTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
 
-                    ToggleControls(true);
-                };
+                ToggleControls(true);
+            };
 
-                worker.RunWorkerAsync();
-            }
+            worker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -287,8 +280,8 @@ namespace BatchResize
                 foreColor = Settings.Default.DarkModeForeColor;
             }
 
-            this.BackColor = backColor;
-            this.ForeColor = foreColor;
+            BackColor = backColor;
+            ForeColor = foreColor;
             gbResizeOptions.ForeColor = foreColor;
             gbSaveOptions.ForeColor = foreColor;
 
@@ -306,17 +299,15 @@ namespace BatchResize
         /// <returns>Whether or not key press was processed correctly.</returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if ( keyData == Settings.Default.DarkModeToggleKeys )
-            {
-                _themeSet = !_themeSet;
-                Settings.Default.DarkModeOn = _themeSet;
-                Settings.Default.Save();
+            if (keyData != Settings.Default.DarkModeToggleKeys) return base.ProcessCmdKey(ref msg, keyData);
 
-                SetTheme();
-                return true;
-            }
+            _themeSet = !_themeSet;
+            Settings.Default.DarkModeOn = _themeSet;
+            Settings.Default.Save();
 
-            return base.ProcessCmdKey(ref msg, keyData);
+            SetTheme();
+            return true;
+
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A dead simple batch image resizer that's efficient and easy to use.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ConfiDevs")]
-[assembly: AssemblyProduct("BatchResize")]
+[assembly: AssemblyProduct("Batch Resize")]
 [assembly: AssemblyCopyright("Copyright © Matthew Beaudin 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
